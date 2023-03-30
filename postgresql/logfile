@@ -1,0 +1,10 @@
+2023-03-30 23:51:45.753 IST [62834] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-03-30 23:51:45.753 IST [62834] LOG:  listening on IPv4 address "127.0.0.1", port 9432
+2023-03-30 23:51:45.755 IST [62834] LOG:  listening on Unix socket "/tmp/.s.PGSQL.9432"
+2023-03-30 23:51:45.758 IST [62835] LOG:  database system was shut down at 2023-03-30 23:49:16 IST
+2023-03-30 23:51:45.760 IST [62834] LOG:  database system is ready to accept connections
+2023-03-30 23:54:06.911 IST [62834] LOG:  received fast shutdown request
+2023-03-30 23:54:06.912 IST [62834] LOG:  aborting any active transactions
+2023-03-30 23:54:06.913 IST [62834] LOG:  background worker "logical replication launcher" (PID 62841) exited with exit code 1
+2023-03-30 23:54:06.913 IST [62836] LOG:  shutting down
+2023-03-30 23:54:06.925 IST [62834] LOG:  database system is shut down

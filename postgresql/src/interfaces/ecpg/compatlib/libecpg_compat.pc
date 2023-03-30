@@ -1,0 +1,9 @@
+Name: libecpg_compat
+Description: PostgreSQL libecpg_compat library
+Url: https://www.postgresql.org/
+Version: 14.7
+Requires: 
+Requires.private: libecpg libpgtypes
+Cflags: -I/home/dyuneesh/Desktop/6th_sem/dibs_317_387/project/CS-387-SPR-23-functional_dependency_support_postgresql-PROJECT/postgresql//install/include
+Libs: -L/home/dyuneesh/Desktop/6th_sem/dibs_317_387/project/CS-387-SPR-23-functional_dependency_support_postgresql-PROJECT/postgresql//install/lib -lecpg_compat
+Libs.private:  -lpgcommon -lpgport -lpq -lm
