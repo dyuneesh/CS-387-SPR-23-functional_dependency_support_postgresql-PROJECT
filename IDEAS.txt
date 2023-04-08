@@ -1,0 +1,21 @@
+-->for insert into fd statements....... add a unique constarint in fd table to avoid repeated inserts of fds... + sort the attrs while inserting....
+
+Then to that create a table to store the fd lhs rhs values kindof like a view. + it has unique / check constraints.
+
+except that if the table already had data before.... we need to fill the newly created table with that data too.
+so kind of this is the workflow.
+
+
+
+<insert into fd> ==========transform======>   <insert into fd table><create rel fd table><insert select fd attrs (*) from table into rel fd table.>
+
+
+
+-->insert into a speciifc table values ().
+
+
+<First need to kindof loop through all fds of that table.. then 
+insert the present tuple's fd view attrs into rel fd tables.... if some constraint fails, triggers error!
+if all right then insert into the specific table.
+
+HOW TO DO LOOPING??? implicitly by queries.

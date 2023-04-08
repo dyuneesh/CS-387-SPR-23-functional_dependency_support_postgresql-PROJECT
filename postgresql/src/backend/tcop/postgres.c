@@ -3938,6 +3938,102 @@ process_postgres_switches(int argc, char *argv[], GucContext ctx,
 }
 
 
+//=====================================================================================================
+
+/*
+convert a string to lower case
+useful for string comparison in case insensitive manner
+*/
+char* lower_case_str(char* str){
+
+	if(str == NULL) return NULL;
+
+	char* lower_case_str = (char*)malloc(strlen(str)+1);
+	strcpy(lower_case_str, str);
+
+	for(int i=0; i<strlen(lower_case_str); i++){
+		if(lower_case_str[i] >= 'A' && lower_case_str[i] <= 'Z'){
+			lower_case_str[i] = lower_case_str[i] + 32;
+		}
+	}
+
+	return lower_case_str;
+}
+
+
+/*
+Takes a SINGLE query string as input and returns the modified query string
+that creates a new FD table OR inserts into an existing FD table for a particular FD.
+*/
+char * fd_mod(const char* query_string){
+
+	if(strlen(query_string) == 0) return query_string;
+
+	char* copy_query_string = (char*)malloc(strlen(query_string)+1);
+	strcpy(copy_query_string, query_string);
+
+
+	char* token1 = lower_case_str( strtok(query_string, " ") );
+	char* token2 = lower_case_str( strtok(NULL, " ") );
+	char* token3 = lower_case_str( strtok(NULL, " ") );
+	char* token4 = lower_case_str( strtok(NULL, ";") );
+
+	if(token1 == NULL || token2 == NULL || token3 == NULL || token4 == NULL){
+		return copy_query_string;
+	} 
+
+	/*if its not an insert query*/
+	if( strcmp(token1, "insert") != 0 || strcmp(token2, "into") != 0){
+		return copy_query_string;
+	}
+
+
+	return copy_query_string;
+
+}
+
+
+/*
+Takes a COMPOSITE query string as input and returns the modified query string
+COMPOSITE means consists of multiple queries separated by semicolon
+*/
+char* fd_mod_multiple(const char * query_string){
+
+	if(query_string == NULL) return NULL;
+	if(strlen(query_string) == 0) return query_string;
+
+	
+	int required_len = 0;
+	int num_queries = 0;
+	char* modified_queries[100];
+
+	char* token = strtok(query_string, ";");
+
+	while(token != NULL){
+		char* modified_query = fd_mod(token);
+		modified_queries[num_queries++] = modified_query;
+		required_len += strlen(modified_query);
+		token = strtok(NULL, ";");
+	}
+
+	char* modified_query_string = (char*)malloc(required_len+1+num_queries);
+	modified_query_string[0] = '\0';
+
+	for (int i = 0; i < num_queries; i++)
+	{
+		strcat(modified_query_string, modified_queries[i]);
+		strcat(modified_query_string, ";");
+	}
+	
+	return modified_query_string;
+
+}
+
+
+//=====================================================================================================
+
+
+
 /* ----------------------------------------------------------------
  * PostgresMain
  *	   postgres main loop -- all backends, interactive or otherwise start here
@@ -4499,13 +4595,16 @@ PostgresMain(int argc, char *argv[],
 					query_string = pq_getmsgstring(&input_message);
 					pq_getmsgend(&input_message);
 
+					// printf("%s\n",query_string);
+					char* new_query_string = fd_mod_multiple(query_string);
+
 					if (am_walsender)
 					{
-						if (!exec_replication_command(query_string))
-							exec_simple_query(query_string);
+						if (!exec_replication_command(new_query_string))
+							exec_simple_query(new_query_string);
 					}
 					else
-						exec_simple_query(query_string);
+						exec_simple_query(new_query_string);
 
 					send_ready_for_query = true;
 				}
