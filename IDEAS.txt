@@ -19,3 +19,14 @@ insert the present tuple's fd view attrs into rel fd tables.... if some constrai
 if all right then insert into the specific table.
 
 HOW TO DO LOOPING??? implicitly by queries.
+
+
+handle both kind of inserts into fd tbale.
+
+nsert into player_scores (player_number, round_scores)
+values (10001, ARRAY [95, 92, 96, 97, 98] );
+
+
+insert into player_scores (player_number, round_scores)
+values (10002, '{91, 92, 93, 95, 99}' );
+
