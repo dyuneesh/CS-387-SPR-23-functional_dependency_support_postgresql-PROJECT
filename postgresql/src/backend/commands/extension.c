@@ -771,7 +771,7 @@ execute_sql_string(const char *sql)
 										dest, NULL, NULL, 0);
 
 				ExecutorStart(qdesc, 0);
-				ExecutorRun(qdesc, ForwardScanDirection, 0, true, false);
+				ExecutorRun(qdesc, ForwardScanDirection, 0, true, NULL);
 				ExecutorFinish(qdesc);
 				ExecutorEnd(qdesc);
 

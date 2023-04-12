@@ -27,6 +27,8 @@
 #include "utils/memutils.h"
 #include "utils/snapmgr.h"
 
+#include "utils/res_tuple_table.h"
+
 
 /*
  * ActivePortal is the currently executing Portal (the most closely nested,
@@ -45,7 +47,7 @@ static void FillPortalStore(Portal portal, bool isTopLevel);
 static uint64 RunFromStore(Portal portal, ScanDirection direction, uint64 count,
 						   DestReceiver *dest);
 static uint64 PortalRunSelect(Portal portal, bool forward, long count,
-							  DestReceiver *dest,bool block_output);
+							  DestReceiver *dest,struct TupleTable* ResTupTable);
 static void PortalRunUtility(Portal portal, PlannedStmt *pstmt,
 							 bool isTopLevel, bool setHoldSnapshot,
 							 DestReceiver *dest, QueryCompletion *qc);
@@ -157,7 +159,7 @@ ProcessQuery(PlannedStmt *plan,
 	/*
 	 * Run the plan to completion.
 	 */
-	ExecutorRun(queryDesc, ForwardScanDirection, 0L, true, false);
+	ExecutorRun(queryDesc, ForwardScanDirection, 0L, true, NULL);
 
 	/*
 	 * Build command completion status data, if caller wants one.
@@ -680,7 +682,7 @@ PortalSetResultFormat(Portal portal, int nFormats, int16 *formats)
 bool
 PortalRun(Portal portal, long count, bool isTopLevel, bool run_once,
 		  DestReceiver *dest, DestReceiver *altdest,
-		  QueryCompletion *qc, int* tuple_count)
+		  QueryCompletion *qc, struct TupleTable* ResTupTable)
 {
 	bool		result;
 	uint64		nprocessed;
@@ -762,10 +764,10 @@ PortalRun(Portal portal, long count, bool isTopLevel, bool run_once,
 				/*
 				 * Now fetch desired portion of results.
 				 */
-				nprocessed = PortalRunSelect(portal, true, count, dest,tuple_count != NULL);
-				printf("Number of tuples processed: %d\n", nprocessed);
-				if(tuple_count != NULL)
-					*tuple_count = nprocessed;
+				nprocessed = PortalRunSelect(portal, true, count, dest, ResTupTable);
+				// printf("Number of tuples processed: %d\n", nprocessed);
+				if(ResTupTable != NULL)
+					ResTupTable->nprocessed = nprocessed;
 				/*
 				 * If the portal result contains a command tag and the caller
 				 * gave us a pointer to store it, copy it and update the
@@ -867,7 +869,7 @@ PortalRunSelect(Portal portal,
 				bool forward,
 				long count,
 				DestReceiver *dest,
-				bool block_output)
+				struct TupleTable *ResTupTable)
 {
 	QueryDesc  *queryDesc;
 	ScanDirection direction;
@@ -922,7 +924,7 @@ PortalRunSelect(Portal portal,
 		{
 			PushActiveSnapshot(queryDesc->snapshot);
 			ExecutorRun(queryDesc, direction, (uint64) count,
-						portal->run_once, block_output);
+						portal->run_once, ResTupTable);
 			nprocessed = queryDesc->estate->es_processed;
 			PopActiveSnapshot();
 		}
@@ -962,7 +964,7 @@ PortalRunSelect(Portal portal,
 		{
 			PushActiveSnapshot(queryDesc->snapshot);
 			ExecutorRun(queryDesc, direction, (uint64) count,
-						portal->run_once, block_output);
+						portal->run_once, ResTupTable);
 			nprocessed = queryDesc->estate->es_processed;
 			PopActiveSnapshot();
 		}
@@ -1552,7 +1554,7 @@ DoPortalRunFetch(Portal portal,
 					DoPortalRewind(portal);
 					if (count > 1)
 						PortalRunSelect(portal, true, count - 1,
-										None_Receiver,false);
+										None_Receiver,NULL);
 				}
 				else
 				{
@@ -1562,12 +1564,12 @@ DoPortalRunFetch(Portal portal,
 						pos++;	/* need one extra fetch if off end */
 					if (count <= pos)
 						PortalRunSelect(portal, false, pos - count + 1,
-										None_Receiver, false);
+										None_Receiver, NULL);
 					else if (count > pos + 1)
 						PortalRunSelect(portal, true, count - pos - 1,
-										None_Receiver, false);
+										None_Receiver, NULL);
 				}
-				return PortalRunSelect(portal, true, 1L, dest, false);
+				return PortalRunSelect(portal, true, 1L, dest, NULL);
 			}
 			else if (count < 0)
 			{
@@ -1578,17 +1580,17 @@ DoPortalRunFetch(Portal portal,
 				 * (Is it worth considering case where count > half of size of
 				 * query?  We could rewind once we know the size ...)
 				 */
-				PortalRunSelect(portal, true, FETCH_ALL, None_Receiver, false);
+				PortalRunSelect(portal, true, FETCH_ALL, None_Receiver, NULL);
 				if (count < -1)
-					PortalRunSelect(portal, false, -count - 1, None_Receiver, false);
-				return PortalRunSelect(portal, false, 1L, dest, false);
+					PortalRunSelect(portal, false, -count - 1, None_Receiver, NULL);
+				return PortalRunSelect(portal, false, 1L, dest, NULL);
 			}
 			else
 			{
 				/* count == 0 */
 				/* Rewind to start, return zero rows */
 				DoPortalRewind(portal);
-				return PortalRunSelect(portal, true, 0L, dest, false);
+				return PortalRunSelect(portal, true, 0L, dest, NULL);
 			}
 			break;
 		case FETCH_RELATIVE:
@@ -1598,8 +1600,8 @@ DoPortalRunFetch(Portal portal,
 				 * Definition: advance count-1 rows, return next row (if any).
 				 */
 				if (count > 1)
-					PortalRunSelect(portal, true, count - 1, None_Receiver, false);
-				return PortalRunSelect(portal, true, 1L, dest, false);
+					PortalRunSelect(portal, true, count - 1, None_Receiver, NULL);
+				return PortalRunSelect(portal, true, 1L, dest, NULL);
 			}
 			else if (count < 0)
 			{
@@ -1608,8 +1610,8 @@ DoPortalRunFetch(Portal portal,
 				 * any).
 				 */
 				if (count < -1)
-					PortalRunSelect(portal, false, -count - 1, None_Receiver, false);
-				return PortalRunSelect(portal, false, 1L, dest, false);
+					PortalRunSelect(portal, false, -count - 1, None_Receiver, NULL);
+				return PortalRunSelect(portal, false, 1L, dest, NULL);
 			}
 			else
 			{
@@ -1655,7 +1657,7 @@ DoPortalRunFetch(Portal portal,
 			 */
 			if (on_row)
 			{
-				PortalRunSelect(portal, false, 1L, None_Receiver, false);
+				PortalRunSelect(portal, false, 1L, None_Receiver, NULL);
 				/* Set up to fetch one row forward */
 				count = 1;
 				forward = true;
@@ -1676,7 +1678,7 @@ DoPortalRunFetch(Portal portal,
 		return result;
 	}
 
-	return PortalRunSelect(portal, forward, count, dest, false);
+	return PortalRunSelect(portal, forward, count, dest, NULL);
 }
 
 /*

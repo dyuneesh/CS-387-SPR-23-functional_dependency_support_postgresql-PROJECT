@@ -333,7 +333,7 @@ explain_ExecutorRun(QueryDesc *queryDesc, ScanDirection direction,
 		if (prev_ExecutorRun)
 			prev_ExecutorRun(queryDesc, direction, count, execute_once);
 		else
-			standard_ExecutorRun(queryDesc, direction, count, execute_once, false);
+			standard_ExecutorRun(queryDesc, direction, count, execute_once, NULL);
 	}
 	PG_FINALLY();
 	{

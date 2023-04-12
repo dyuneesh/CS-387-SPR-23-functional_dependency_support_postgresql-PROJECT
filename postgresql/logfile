@@ -32,3 +32,86 @@
 2023-04-12 10:30:32.978 IST [23418] LOG:  background worker "logical replication launcher" (PID 23425) exited with exit code 1
 2023-04-12 10:30:32.978 IST [23420] LOG:  shutting down
 2023-04-12 10:30:32.995 IST [23418] LOG:  database system is shut down
+2023-04-12 14:11:11.602 IST [58236] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-04-12 14:11:11.603 IST [58236] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-04-12 14:11:11.606 IST [58236] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-04-12 14:11:11.611 IST [58237] LOG:  database system was shut down at 2023-04-12 14:11:04 IST
+2023-04-12 14:11:11.617 IST [58236] LOG:  database system is ready to accept connections
+Number of tuples processed: 1
+Number of Tuples received: 1
+Number of tuples processed: 1
+Number of Tuples received: 1
+2023-04-12 14:12:35.268 IST [58236] LOG:  received fast shutdown request
+2023-04-12 14:12:35.270 IST [58236] LOG:  aborting any active transactions
+2023-04-12 14:12:35.271 IST [58236] LOG:  background worker "logical replication launcher" (PID 58243) exited with exit code 1
+2023-04-12 14:12:35.271 IST [58238] LOG:  shutting down
+2023-04-12 14:12:35.291 IST [58236] LOG:  database system is shut down
+2023-04-12 14:12:49.094 IST [58576] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-04-12 14:12:49.094 IST [58576] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-04-12 14:12:49.099 IST [58576] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-04-12 14:12:49.104 IST [58577] LOG:  database system was shut down at 2023-04-12 14:12:35 IST
+2023-04-12 14:12:49.108 IST [58576] LOG:  database system is ready to accept connections
+Number of tuples processed: 1
+Number of Tuples received: 1
+Number of tuples processed: 1
+Number of Tuples received: 1
+Number of tuples processed: 1
+Number of Tuples received: 1
+Number of tuples processed: 1
+Number of Tuples received: 1
+Number of tuples processed: 1
+Number of Tuples received: 1
+Number of tuples processed: 1
+Number of Tuples received: 1
+Number of tuples processed: 1
+Number of Tuples received: 1
+2023-04-12 14:30:49.914 IST [58582] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2023-04-12 14:30:49.942 IST [58576] LOG:  could not open file "postmaster.pid": No such file or directory
+2023-04-12 14:30:49.942 IST [58576] LOG:  performing immediate shutdown because data directory lock file is invalid
+2023-04-12 14:30:49.942 IST [58576] LOG:  received immediate shutdown request
+2023-04-12 14:30:49.942 IST [58576] LOG:  could not open file "postmaster.pid": No such file or directory
+2023-04-12 14:30:49.942 IST [58582] LOG:  could not open temporary statistics file "pg_stat/global.tmp": No such file or directory
+2023-04-12 14:30:49.949 IST [58576] LOG:  database system is shut down
+2023-04-12 14:31:48.467 IST [68764] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-04-12 14:31:48.468 IST [68764] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-04-12 14:31:48.472 IST [68764] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-04-12 14:31:48.478 IST [68765] LOG:  database system was shut down at 2023-04-12 14:31:48 IST
+2023-04-12 14:31:48.487 IST [68764] LOG:  database system is ready to accept connections
+2023-04-12 14:32:57.774 IST [68843] FATAL:  lock file "postmaster.pid" already exists
+2023-04-12 14:32:57.774 IST [68843] HINT:  Is another postmaster (PID 68764) running in data directory "/home/bhuvan/dbms/PROJ/postgresql/install/data"?
+2023-04-12 14:33:03.163 IST [68886] FATAL:  lock file "postmaster.pid" already exists
+2023-04-12 14:33:03.163 IST [68886] HINT:  Is another postmaster (PID 68764) running in data directory "/home/bhuvan/dbms/PROJ/postgresql/install/data"?
+2023-04-12 14:33:23.910 IST [69031] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-04-12 14:33:23.911 IST [69031] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-04-12 14:33:23.914 IST [69031] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-04-12 14:33:23.921 IST [69032] LOG:  database system was interrupted; last known up at 2023-04-12 14:31:48 IST
+2023-04-12 14:33:23.994 IST [69032] LOG:  database system was not properly shut down; automatic recovery in progress
+2023-04-12 14:33:23.997 IST [69032] LOG:  redo starts at 0/167E818
+2023-04-12 14:33:23.997 IST [69032] LOG:  invalid record length at 0/167E850: wanted 24, got 0
+2023-04-12 14:33:23.997 IST [69032] LOG:  redo done at 0/167E818 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2023-04-12 14:33:24.011 IST [69031] LOG:  database system is ready to accept connections
+loop
+Number of tuples processed: 1
+Number of Tuples received: 0
+loop
+Number of Tuples received: 0
+loop
+2023-04-12 14:35:01.111 IST [69398] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-04-12 14:35:01.111 IST [69398] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-04-12 14:35:01.115 IST [69398] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-04-12 14:35:01.123 IST [69399] LOG:  database system was interrupted; last known up at 2023-04-12 14:33:41 IST
+2023-04-12 14:35:01.209 IST [69399] LOG:  database system was not properly shut down; automatic recovery in progress
+2023-04-12 14:35:01.212 IST [69399] LOG:  redo starts at 0/167F050
+2023-04-12 14:35:01.212 IST [69399] LOG:  invalid record length at 0/167F180: wanted 24, got 0
+2023-04-12 14:35:01.212 IST [69399] LOG:  redo done at 0/167F148 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2023-04-12 14:35:01.230 IST [69398] LOG:  database system is ready to accept connections
+2023-04-13 00:21:13.981 IST [188149] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-04-13 00:21:13.982 IST [188149] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-04-13 00:21:13.985 IST [188149] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-04-13 00:21:13.989 IST [188150] LOG:  database system was shut down at 2023-04-13 00:20:58 IST
+2023-04-13 00:21:13.993 IST [188149] LOG:  database system is ready to accept connections
+2023-04-13 00:21:27.898 IST [188149] LOG:  received fast shutdown request
+2023-04-13 00:21:27.902 IST [188149] LOG:  aborting any active transactions
+2023-04-13 00:21:27.903 IST [188149] LOG:  background worker "logical replication launcher" (PID 188156) exited with exit code 1
+2023-04-13 00:21:27.903 IST [188151] LOG:  shutting down
+2023-04-13 00:21:27.917 IST [188149] LOG:  database system is shut down

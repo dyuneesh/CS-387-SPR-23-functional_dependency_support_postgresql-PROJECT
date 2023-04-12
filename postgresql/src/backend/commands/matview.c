@@ -415,7 +415,7 @@ refresh_matview_datafill(DestReceiver *dest, Query *query,
 	ExecutorStart(queryDesc, 0);
 
 	/* run the plan */
-	ExecutorRun(queryDesc, ForwardScanDirection, 0L, true, false);
+	ExecutorRun(queryDesc, ForwardScanDirection, 0L, true, NULL);
 
 	processed = queryDesc->estate->es_processed;
 

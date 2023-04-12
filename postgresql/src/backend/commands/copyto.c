@@ -902,7 +902,7 @@ DoCopyTo(CopyToState cstate)
 	else
 	{
 		/* run the plan --- the dest receiver will send tuples */
-		ExecutorRun(cstate->queryDesc, ForwardScanDirection, 0L, true, false);
+		ExecutorRun(cstate->queryDesc, ForwardScanDirection, 0L, true, NULL);
 		processed = ((DR_copy *) cstate->queryDesc->dest)->processed;
 	}
 

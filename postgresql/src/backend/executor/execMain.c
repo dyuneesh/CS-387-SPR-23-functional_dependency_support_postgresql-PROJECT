@@ -66,6 +66,18 @@
 #include "utils/ruleutils.h"
 #include "utils/snapmgr.h"
 
+#include "utils/res_tuple_table.h"
+
+
+/*  EXTRA INCLUDES NEEDED FOR FETCHING TUPLES FROM ``slot``*/
+#include "access/printtup.h"
+#include "libpq/libpq.h"
+#include "libpq/pqformat.h"
+#include "tcop/pquery.h"
+#include "utils/memdebug.h"
+// #include "utils/lsyscache.h"
+// #include "utils/memutils.h"
+
 
 /* Hooks for plugins to get control in ExecutorStart/Run/Finish/End */
 ExecutorStart_hook_type ExecutorStart_hook = NULL;
@@ -88,7 +100,8 @@ static void ExecutePlan(EState *estate, PlanState *planstate,
 						uint64 numberTuples,
 						ScanDirection direction,
 						DestReceiver *dest,
-						bool execute_once);
+						bool execute_once,
+						struct TupleTable* ResTupTable);
 static bool ExecCheckRTEPerms(RangeTblEntry *rte);
 static bool ExecCheckRTEPermsModified(Oid relOid, Oid userid,
 									  Bitmapset *modifiedCols,
@@ -297,17 +310,17 @@ standard_ExecutorStart(QueryDesc *queryDesc, int eflags)
 void
 ExecutorRun(QueryDesc *queryDesc,
 			ScanDirection direction, uint64 count,
-			bool execute_once, bool block_output)
+			bool execute_once, struct TupleTable* ResTupTable)
 {
 	if (ExecutorRun_hook)
 		(*ExecutorRun_hook) (queryDesc, direction, count, execute_once);
 	else
-		standard_ExecutorRun(queryDesc, direction, count, execute_once, block_output);
+		standard_ExecutorRun(queryDesc, direction, count, execute_once, ResTupTable);
 }
 
 void
 standard_ExecutorRun(QueryDesc *queryDesc,
-					 ScanDirection direction, uint64 count, bool execute_once, bool block_output)
+					 ScanDirection direction, uint64 count, bool execute_once, struct TupleTable* ResTupTable)
 {
 	EState	   *estate;
 	CmdType		operation;
@@ -348,9 +361,23 @@ standard_ExecutorRun(QueryDesc *queryDesc,
 	
 	/*
 	NEWLY ADDED CODE
+	to prevent tuples being sent to the terminal.
 	*/
-	if(block_output)
+	if(ResTupTable){
 		sendTuples = false;
+
+		int nattrs = queryDesc->tupDesc->natts;
+		ResTupTable->nattrs = nattrs;
+		struct Header* header = res_makeHeader(nattrs);
+		for(int i = 0; i < nattrs; i++){
+			char* tmpname = queryDesc->tupDesc->attrs[i].attname.data;
+			char* name = (char*)malloc(strlen(tmpname) + 1);
+			int typeid = queryDesc->tupDesc->attrs[i].atttypid;
+			strcpy(name, tmpname);
+			res_addNameToHeader(header, name, typeid);
+		}
+		res_addHeaderTupleTable(ResTupTable, header);
+	}
 
 	if (sendTuples)
 		dest->rStartup(dest, operation, queryDesc->tupDesc);
@@ -372,7 +399,8 @@ standard_ExecutorRun(QueryDesc *queryDesc,
 					count,
 					direction,
 					dest,
-					execute_once);
+					execute_once,
+					ResTupTable);
 	}
 
 	/*
@@ -1517,10 +1545,29 @@ ExecutePlan(EState *estate,
 			uint64 numberTuples,
 			ScanDirection direction,
 			DestReceiver *dest,
-			bool execute_once)
+			bool execute_once,
+			struct TupleTable* ResTupTable)
 {
 	TupleTableSlot *slot;
 	uint64		current_tuple_count;
+
+
+	/* MODIFIED ---- CODE----
+	Present Needed Variables for tuple fetching.
+	*/
+
+	TupleDesc	typeinfo;
+	int			natts ;
+	Datum		attr;
+	char	   *value;
+	bool		isnull;
+	Oid			typoutput;
+	bool		typisvarlena;
+
+	if(ResTupTable)
+	{
+		sendTuples = false;
+	}
 
 	/*
 	 * initialize local variables
@@ -1587,6 +1634,33 @@ ExecutePlan(EState *estate,
 			 */
 			if (!dest->receiveSlot(slot, dest))
 				break;
+		}
+		else if ( ResTupTable->mode == 2  ){
+			/* Store the tuple in the result tuple table */
+			// slot->tts_ops->getsomeattrs(slot, slot->tts_tupleDescriptor->natts); //fetch attributes
+			typeinfo = slot->tts_tupleDescriptor;
+			natts = typeinfo->natts;
+			int			i;
+
+			struct Row* curr_row = res_makeRow(natts);
+
+			for (i = 0; i < natts; ++i)
+			{
+				attr = slot_getattr(slot, i + 1, &isnull);
+				if (isnull)
+					continue;
+				getTypeOutputInfo(TupleDescAttr(typeinfo, i)->atttypid,
+								&typoutput, &typisvarlena);
+
+				value = OidOutputFunctionCall(typoutput, attr);
+
+				res_addValueToRow(curr_row, value);
+			}
+
+			res_TupleTableInsertRow(ResTupTable, curr_row);
+		}
+		else{
+			ResTupTable->num_rows++;
 		}
 
 		/*

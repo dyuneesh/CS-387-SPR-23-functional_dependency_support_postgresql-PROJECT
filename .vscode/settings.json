@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "res_tuple_table.h": "c",
+        "wait_event.h": "c"
+    }
+}

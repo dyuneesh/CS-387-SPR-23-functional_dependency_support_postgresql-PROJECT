@@ -20,6 +20,8 @@
 #include "nodes/parsenodes.h"
 #include "utils/memutils.h"
 
+#include "utils/res_tuple_table.h"
+
 
 /*
  * The "eflags" argument to ExecutorStart and the various ExecInitNode
@@ -188,9 +190,9 @@ ExecGetJunkAttribute(TupleTableSlot *slot, AttrNumber attno, bool *isNull)
 extern void ExecutorStart(QueryDesc *queryDesc, int eflags);
 extern void standard_ExecutorStart(QueryDesc *queryDesc, int eflags);
 extern void ExecutorRun(QueryDesc *queryDesc,
-						ScanDirection direction, uint64 count, bool execute_once, bool block_output);
+						ScanDirection direction, uint64 count, bool execute_once, struct TupleTable* ResTupTable);
 extern void standard_ExecutorRun(QueryDesc *queryDesc,
-								 ScanDirection direction, uint64 count, bool execute_once, bool block_output);
+								 ScanDirection direction, uint64 count, bool execute_once, struct TupleTable* ResTupTable);
 extern void ExecutorFinish(QueryDesc *queryDesc);
 extern void standard_ExecutorFinish(QueryDesc *queryDesc);
 extern void ExecutorEnd(QueryDesc *queryDesc);

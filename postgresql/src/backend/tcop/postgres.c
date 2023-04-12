@@ -81,6 +81,8 @@
 #include "utils/timeout.h"
 #include "utils/timestamp.h"
 
+#include "utils/res_tuple_table.h"
+
 /* ----------------
  *		global variables
  * ----------------
@@ -205,6 +207,184 @@ static void drop_unnamed_stmt(void);
 static void log_disconnections(int code, Datum arg);
 static void enable_statement_timeout(void);
 static void disable_statement_timeout(void);
+
+
+
+
+/*
+Routines used for Hack
+
+-------------------------------------------------------------------------------
+                        ROW OPERATIONS                                        |
+-------------------------------------------------------------------------------
+*/
+
+struct Row* res_makeRow(int n){
+    struct Row* r = (struct Row*)malloc(sizeof(struct Row));
+    r->nvalid = 0;
+    r->values = (char**)malloc(n * sizeof(char*));
+    r->next = NULL;
+    return r;
+}
+struct Header* res_makeHeader(int n){
+    struct Header* h = (struct Header*)malloc(sizeof(struct Header));
+    h->nvalid = 0;
+    h->names = (char**)malloc(n * sizeof(char*));
+    h->type_ids = (int*)malloc(n * sizeof(int));
+    return h;
+}
+
+/*
+We assume that space has already been allocated in the values array, when initialising the TupleTable.
+Just fill the values in the array.
+*/
+void res_addValueToRow(struct Row* r, char* value){
+	if( r == NULL) return;
+    r->values[r->nvalid++] = value;
+}
+
+void res_addNameToHeader(struct Header* h, char* name, int type_id){
+	if( !(h && name) ) return;
+    h->names   [h->nvalid]   = name;
+    h->type_ids[h->nvalid++] = type_id;
+}
+
+
+void res_printRow(struct Row* r){
+	if( r == NULL){
+		printf("NULL ROW\n");
+		return;
+	}
+    int i;
+    for(i = 0; i < r->nvalid; i++){
+        printf("%s\t", r->values[i]);
+    }
+    printf("\n");
+}
+
+void res_printHeader(struct Header* h){
+	if( h == NULL){
+		printf("NULL HEADER\n");
+		return;
+	}
+    int i;
+    for(i = 0; i < h->nvalid; i++){
+        printf("%s\t", h->names[i]);
+    }
+    printf("\n");
+}
+
+
+/*
+-------------------------------------------------------------------------------
+                        TUPLE TABLE OPERATIONS                                 |
+-------------------------------------------------------------------------------
+*/
+
+struct TupleTable* res_makeTupleTable(int mode){
+    struct TupleTable* t = (struct TupleTable*)malloc(sizeof(struct TupleTable));
+    t->num_rows = 0;
+    t->nattrs = 0;
+    t->mode = mode;
+    t->nprocessed = 0;
+    t->header = NULL;
+    t->head = NULL;
+    return t;
+}
+
+void res_addHeaderTupleTable(struct TupleTable* t, struct Header* h){
+	if( t == NULL || h == NULL) return;
+    t->header = h;
+    t->nattrs = h->nvalid;
+}
+
+bool res_isTupleTableEmpty(struct TupleTable *t)
+{
+	if( t == NULL) return true;
+
+    if(t->num_rows == 0)
+        return true;
+    else
+        return false;
+}
+
+
+/*
+Inserts the tuple at the start rather than at the end.
+For performance reasons.
+Because later, we anyway scan the whole table sequentially.
+*/
+void res_TupleTableInsertRow(struct TupleTable*t, struct Row* r)
+{
+	if( t == NULL || r == NULL) return;
+
+    if(res_isTupleTableEmpty(t))
+    {
+        t->head = r;
+    }
+    else
+    {
+        r->next = t->head;
+        t->head = r; 
+    }
+    t->num_rows++;
+}
+
+void res_TupleTableInsertValues(struct TupleTable*t, char** values)
+{
+	if( t == NULL || values == NULL) return;
+
+    struct Row *r = (struct Row *)malloc(sizeof(struct Row));
+    r->values = values;
+    r->next = NULL;
+
+    if(res_isTupleTableEmpty(t))
+    {
+        t->head = r;
+    }
+    else
+    {
+        r->next = t->head;
+        t->head = r; 
+    }
+    t->num_rows++;
+}
+
+void res_printTupleTable(struct TupleTable *t)
+{
+	if( t == NULL){
+		printf("NULL TUPLE TABLE\n");
+		return;
+	}
+
+
+    //---- HEADER -----
+    printf("Number of rows: %d\n", t->num_rows);
+    printf("Number of attributes: %d\n", t->nattrs);
+
+    res_printHeader(t->header);
+
+    printf("--------------------------------------------------------------------\n");
+
+    struct Row *r = t->head;
+    while(r != NULL)
+    {
+        res_printRow(r);
+        r = r->next;
+    }
+
+    printf("--------------------------------------------------------------------\n");
+}
+
+
+
+
+
+
+//====================================== ORIGINAL SOURCE CODE HERE ............ 
+
+
+
 
 /* ----------------------------------------------------------------
  *		routines to obtain user input
@@ -945,9 +1125,13 @@ pg_plan_queries(List *querytrees, const char *query_string, int cursorOptions,
  * exec_simple_query
  *
  * Execute a "simple Query" protocol message.
+ * query_mode
+ * 		0: normal query
+ * 		1: return count of tuples in case of select
+ * 		2: fetch even tuples along with count.
  */
-static int
-exec_simple_query(const char *query_string, bool fd_query)
+static struct TupleTable*
+exec_simple_query(const char *query_string, int query_mode)
 {
 	CommandDest dest = whereToSendOutput;
 	MemoryContext oldcontext;
@@ -957,7 +1141,7 @@ exec_simple_query(const char *query_string, bool fd_query)
 	bool was_logged = false;
 	bool use_implicit_block;
 	char msec_str[32];
-	int tuple_count_select = 0;
+	struct TupleTable *ResTupTable = NULL;
 
 	/*
 	 * Report query to various monitoring facilities.
@@ -1206,6 +1390,12 @@ exec_simple_query(const char *query_string, bool fd_query)
 		/*
 		 * Run the portal to completion, and then drop it (and the receiver).
 		 */
+		if(query_mode != 0){
+			ResTupTable = res_makeTupleTable(query_mode);
+		}else{
+			ResTupTable = NULL;
+		}
+
 		(void)PortalRun(portal,
 						FETCH_ALL,
 						true, /* always top level */
@@ -1213,7 +1403,7 @@ exec_simple_query(const char *query_string, bool fd_query)
 						receiver,
 						receiver,
 						&qc,
-						fd_query ? &tuple_count_select : NULL);
+						ResTupTable);
 
 		receiver->rDestroy(receiver);
 
@@ -1319,7 +1509,7 @@ exec_simple_query(const char *query_string, bool fd_query)
 
 	// return tuple_count_select;
 	// printf("Executed %d rows\n", tuple_count_select);
-	return tuple_count_select;
+	return ResTupTable;
 }
 
 /*
@@ -4462,7 +4652,7 @@ void PostgresMain(int argc, char *argv[],
 		case 'Q': /* simple query */
 		{
 			const char *query_string;
-			int tuple_count;
+			struct TupleTable * ResTupTable;
 
 			/* Set statement_timestamp() */
 			SetCurrentStatementStartTimestamp();
@@ -4473,11 +4663,19 @@ void PostgresMain(int argc, char *argv[],
 			if (am_walsender)
 			{
 				if (!exec_replication_command(query_string))
-					exec_simple_query(query_string, false);
+					exec_simple_query(query_string, 0);
 			}
 			else
-				tuple_count = exec_simple_query(query_string, true);
-				printf("Number of Tuples received: %d\n", tuple_count);
+				exec_simple_query(query_string, 0);
+
+			// ResTupTable = exec_simple_query("select * from d;",0);
+			// res_printTupleTable(ResTupTable);
+
+			// ResTupTable = exec_simple_query("select * from d;",1);
+			// res_printTupleTable(ResTupTable);
+
+			// ResTupTable = exec_simple_query("select * from d;",2);
+			// res_printTupleTable(ResTupTable);
 
 			send_ready_for_query = true;
 		}

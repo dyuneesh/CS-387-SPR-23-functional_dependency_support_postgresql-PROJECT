@@ -590,7 +590,7 @@ ExplainOnePlan(PlannedStmt *plannedstmt, IntoClause *into, ExplainState *es,
 			dir = ForwardScanDirection;
 
 		/* run the plan */
-		ExecutorRun(queryDesc, dir, 0L, true, false);
+		ExecutorRun(queryDesc, dir, 0L, true, NULL);
 
 		/* run cleanup too */
 		ExecutorFinish(queryDesc);

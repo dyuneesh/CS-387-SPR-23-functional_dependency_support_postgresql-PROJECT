@@ -17,6 +17,8 @@
 #include "nodes/parsenodes.h"
 #include "utils/portal.h"
 
+#include "utils/res_tuple_table.h"
+
 struct PlannedStmt;				/* avoid including plannodes.h here */
 
 
@@ -37,7 +39,7 @@ extern void PortalSetResultFormat(Portal portal, int nFormats,
 
 extern bool PortalRun(Portal portal, long count, bool isTopLevel,
 					  bool run_once, DestReceiver *dest, DestReceiver *altdest,
-					  QueryCompletion *qc,int* tuple_count);
+					  QueryCompletion *qc,struct TupleTable* ResTupTable);
 
 extern uint64 PortalRunFetch(Portal portal,
 							 FetchDirection fdirection,
