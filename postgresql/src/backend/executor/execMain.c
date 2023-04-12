@@ -297,17 +297,17 @@ standard_ExecutorStart(QueryDesc *queryDesc, int eflags)
 void
 ExecutorRun(QueryDesc *queryDesc,
 			ScanDirection direction, uint64 count,
-			bool execute_once)
+			bool execute_once, bool block_output)
 {
 	if (ExecutorRun_hook)
 		(*ExecutorRun_hook) (queryDesc, direction, count, execute_once);
 	else
-		standard_ExecutorRun(queryDesc, direction, count, execute_once);
+		standard_ExecutorRun(queryDesc, direction, count, execute_once, block_output);
 }
 
 void
 standard_ExecutorRun(QueryDesc *queryDesc,
-					 ScanDirection direction, uint64 count, bool execute_once)
+					 ScanDirection direction, uint64 count, bool execute_once, bool block_output)
 {
 	EState	   *estate;
 	CmdType		operation;
@@ -345,6 +345,12 @@ standard_ExecutorRun(QueryDesc *queryDesc,
 
 	sendTuples = (operation == CMD_SELECT ||
 				  queryDesc->plannedstmt->hasReturning);
+	
+	/*
+	NEWLY ADDED CODE
+	*/
+	if(block_output)
+		sendTuples = false;
 
 	if (sendTuples)
 		dest->rStartup(dest, operation, queryDesc->tupDesc);

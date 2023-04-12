@@ -289,7 +289,7 @@ ExecuteQuery(ParseState *pstate,
 	 */
 	PortalStart(portal, paramLI, eflags, GetActiveSnapshot());
 
-	(void) PortalRun(portal, count, false, true, dest, dest, qc);
+	(void) PortalRun(portal, count, false, true, dest, dest, qc, NULL);
 
 	PortalDrop(portal, false);
 

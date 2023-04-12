@@ -2910,7 +2910,7 @@ _SPI_pquery(QueryDesc *queryDesc, bool fire_triggers, uint64 tcount)
 
 	ExecutorStart(queryDesc, eflags);
 
-	ExecutorRun(queryDesc, ForwardScanDirection, tcount, true);
+	ExecutorRun(queryDesc, ForwardScanDirection, tcount, true, false);
 
 	_SPI_current->processed = queryDesc->estate->es_processed;
 

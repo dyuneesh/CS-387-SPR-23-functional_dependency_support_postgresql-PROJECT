@@ -37,7 +37,7 @@ extern void PortalSetResultFormat(Portal portal, int nFormats,
 
 extern bool PortalRun(Portal portal, long count, bool isTopLevel,
 					  bool run_once, DestReceiver *dest, DestReceiver *altdest,
-					  QueryCompletion *qc);
+					  QueryCompletion *qc,int* tuple_count);
 
 extern uint64 PortalRunFetch(Portal portal,
 							 FetchDirection fdirection,

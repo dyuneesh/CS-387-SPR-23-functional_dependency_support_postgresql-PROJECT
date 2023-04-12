@@ -8,3 +8,27 @@
 2023-03-30 23:54:06.913 IST [62834] LOG:  background worker "logical replication launcher" (PID 62841) exited with exit code 1
 2023-03-30 23:54:06.913 IST [62836] LOG:  shutting down
 2023-03-30 23:54:06.925 IST [62834] LOG:  database system is shut down
+2023-04-12 10:26:23.269 IST [11583] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-04-12 10:26:23.270 IST [11583] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-04-12 10:26:23.273 IST [11583] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-04-12 10:26:23.277 IST [11584] LOG:  database system was shut down at 2023-04-12 10:26:23 IST
+2023-04-12 10:26:23.280 IST [11583] LOG:  database system is ready to accept connections
+2023-04-12 10:26:47.809 IST [11594] ERROR:  relation "a" does not exist at character 23
+2023-04-12 10:26:47.809 IST [11594] STATEMENT:  explain select * from a;
+2023-04-12 10:27:01.581 IST [11583] LOG:  received fast shutdown request
+2023-04-12 10:27:01.584 IST [11583] LOG:  aborting any active transactions
+2023-04-12 10:27:01.584 IST [11583] LOG:  background worker "logical replication launcher" (PID 11590) exited with exit code 1
+2023-04-12 10:27:01.584 IST [11585] LOG:  shutting down
+2023-04-12 10:27:01.598 IST [11583] LOG:  database system is shut down
+2023-04-12 10:29:57.080 IST [23418] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-04-12 10:29:57.081 IST [23418] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-04-12 10:29:57.083 IST [23418] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-04-12 10:29:57.089 IST [23419] LOG:  database system was shut down at 2023-04-12 10:27:11 IST
+2023-04-12 10:29:57.091 IST [23418] LOG:  database system is ready to accept connections
+2023-04-12 10:29:57.176 IST [23427] ERROR:  database "test" already exists
+2023-04-12 10:29:57.176 IST [23427] STATEMENT:  CREATE DATABASE test;
+2023-04-12 10:30:32.965 IST [23418] LOG:  received fast shutdown request
+2023-04-12 10:30:32.977 IST [23418] LOG:  aborting any active transactions
+2023-04-12 10:30:32.978 IST [23418] LOG:  background worker "logical replication launcher" (PID 23425) exited with exit code 1
+2023-04-12 10:30:32.978 IST [23420] LOG:  shutting down
+2023-04-12 10:30:32.995 IST [23418] LOG:  database system is shut down

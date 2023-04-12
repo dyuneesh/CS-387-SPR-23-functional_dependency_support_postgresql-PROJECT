@@ -188,9 +188,9 @@ ExecGetJunkAttribute(TupleTableSlot *slot, AttrNumber attno, bool *isNull)
 extern void ExecutorStart(QueryDesc *queryDesc, int eflags);
 extern void standard_ExecutorStart(QueryDesc *queryDesc, int eflags);
 extern void ExecutorRun(QueryDesc *queryDesc,
-						ScanDirection direction, uint64 count, bool execute_once);
+						ScanDirection direction, uint64 count, bool execute_once, bool block_output);
 extern void standard_ExecutorRun(QueryDesc *queryDesc,
-								 ScanDirection direction, uint64 count, bool execute_once);
+								 ScanDirection direction, uint64 count, bool execute_once, bool block_output);
 extern void ExecutorFinish(QueryDesc *queryDesc);
 extern void standard_ExecutorFinish(QueryDesc *queryDesc);
 extern void ExecutorEnd(QueryDesc *queryDesc);

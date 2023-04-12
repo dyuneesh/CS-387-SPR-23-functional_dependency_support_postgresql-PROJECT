@@ -1,0 +1,259 @@
+make -C ./src/backend generated-headers
+make[1]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend'
+make -C catalog distprep generated-header-symlinks
+make[2]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/catalog'
+make[2]: Nothing to be done for 'distprep'.
+make[2]: Nothing to be done for 'generated-header-symlinks'.
+make[2]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/catalog'
+make -C utils distprep generated-header-symlinks
+make[2]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/utils'
+make[2]: Nothing to be done for 'distprep'.
+make[2]: Nothing to be done for 'generated-header-symlinks'.
+make[2]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/utils'
+make[1]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend'
+make -C src install
+make[1]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src'
+make -C common install
+make[2]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/common'
+/usr/bin/mkdir -p '/home/bhuvan/dbms/PROJ/postgresql/install/lib'
+/usr/bin/install -c -m 644  libpgcommon.a '/home/bhuvan/dbms/PROJ/postgresql/install/lib/libpgcommon.a'
+/usr/bin/install -c -m 644  libpgcommon_shlib.a '/home/bhuvan/dbms/PROJ/postgresql/install/lib/libpgcommon_shlib.a'
+make[2]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/common'
+make -C port install
+make[2]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/port'
+/usr/bin/mkdir -p '/home/bhuvan/dbms/PROJ/postgresql/install/lib'
+/usr/bin/install -c -m 644  libpgport.a '/home/bhuvan/dbms/PROJ/postgresql/install/lib/libpgport.a'
+/usr/bin/install -c -m 644  libpgport_shlib.a '/home/bhuvan/dbms/PROJ/postgresql/install/lib/libpgport_shlib.a'
+make[2]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/port'
+make -C timezone install
+make[2]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/timezone'
+make -C ../../src/port all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/port'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/port'
+make -C ../../src/common all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/common'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/common'
+/usr/bin/mkdir -p '/home/bhuvan/dbms/PROJ/postgresql/install/share'
+./zic -d '/home/bhuvan/dbms/PROJ/postgresql/install/share/timezone'  ./data/tzdata.zi
+make -C tznames install
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/timezone/tznames'
+/usr/bin/mkdir -p '/home/bhuvan/dbms/PROJ/postgresql/install/share/timezonesets'
+/usr/bin/install -c -m 644 ./Africa.txt ./America.txt ./Antarctica.txt ./Asia.txt ./Atlantic.txt ./Australia.txt ./Etc.txt ./Europe.txt ./Indian.txt ./Pacific.txt '/home/bhuvan/dbms/PROJ/postgresql/install/share/timezonesets'
+/usr/bin/install -c -m 644 ./Default ./Australia ./India '/home/bhuvan/dbms/PROJ/postgresql/install/share/timezonesets'
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/timezone/tznames'
+make[2]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/timezone'
+make -C backend install
+make[2]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend'
+make -C ../../src/port all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/port'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/port'
+make -C ../../src/common all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/common'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/common'
+make -C catalog distprep generated-header-symlinks
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/catalog'
+make[3]: Nothing to be done for 'distprep'.
+make[3]: Nothing to be done for 'generated-header-symlinks'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/catalog'
+make -C utils distprep generated-header-symlinks
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/utils'
+make[3]: Nothing to be done for 'distprep'.
+make[3]: Nothing to be done for 'generated-header-symlinks'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/utils'
+make -C access all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access'
+make -C brin all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/brin'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/brin'
+make -C common all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/common'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/common'
+make -C gin all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/gin'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/gin'
+make -C gist all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/gist'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/gist'
+make -C hash all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/hash'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/hash'
+make -C heap all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/heap'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/heap'
+make -C index all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/index'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/index'
+make -C nbtree all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/nbtree'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/nbtree'
+make -C rmgrdesc all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/rmgrdesc'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/rmgrdesc'
+make -C spgist all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/spgist'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/spgist'
+make -C table all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/table'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/table'
+make -C tablesample all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/tablesample'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/tablesample'
+make -C transam all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/transam'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access/transam'
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/access'
+make -C bootstrap all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/bootstrap'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/bootstrap'
+make -C catalog all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/catalog'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/catalog'
+make -C parser all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/parser'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/parser'
+make -C commands all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/commands'
+gcc -Wall -Wmissing-prototypes -Wpointer-arith -Wdeclaration-after-statement -Werror=vla -Wendif-labels -Wmissing-format-attribute -Wimplicit-fallthrough=3 -Wcast-function-type -Wformat-security -fno-strict-aliasing -fwrapv -fexcess-precision=standard -Wno-format-truncation -Wno-stringop-truncation -g -O0 -I../../../src/include  -D_GNU_SOURCE   -c -o prepare.o prepare.c
+touch objfiles.txt
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/commands'
+make -C executor all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/executor'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/executor'
+make -C foreign all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/foreign'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/foreign'
+make -C lib all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/lib'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/lib'
+make -C libpq all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/libpq'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/libpq'
+make -C main all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/main'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/main'
+make -C nodes all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/nodes'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/nodes'
+make -C optimizer all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/optimizer'
+make -C geqo all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/optimizer/geqo'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/optimizer/geqo'
+make -C path all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/optimizer/path'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/optimizer/path'
+make -C plan all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/optimizer/plan'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/optimizer/plan'
+make -C prep all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/optimizer/prep'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/optimizer/prep'
+make -C util all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/optimizer/util'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/optimizer/util'
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/optimizer'
+make -C partitioning all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/partitioning'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/partitioning'
+make -C port all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/port'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/port'
+make -C postmaster all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/postmaster'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/postmaster'
+make -C regex all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/regex'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/regex'
+make -C replication all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/replication'
+make -C logical all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/replication/logical'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/replication/logical'
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/replication'
+make -C rewrite all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/rewrite'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/rewrite'
+make -C statistics all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/statistics'
+make[3]: Nothing to be done for 'all'.
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/statistics'
+make -C storage all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage'
+make -C buffer all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/buffer'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/buffer'
+make -C file all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/file'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/file'
+make -C freespace all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/freespace'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/freespace'
+make -C ipc all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/ipc'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/ipc'
+make -C large_object all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/large_object'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/large_object'
+make -C lmgr all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/lmgr'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/lmgr'
+make -C page all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/page'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/page'
+make -C smgr all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/smgr'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/smgr'
+make -C sync all
+make[4]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/sync'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage/sync'
+make[3]: Leaving directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/storage'
+make -C tcop all
+make[3]: Entering directory '/home/bhuvan/dbms/PROJ/postgresql/src/backend/tcop'
+gcc -Wall -Wmissing-prototypes -Wpointer-arith -Wdeclaration-after-statement -Werror=vla -Wendif-labels -Wmissing-format-attribute -Wimplicit-fallthrough=3 -Wcast-function-type -Wformat-security -fno-strict-aliasing -fwrapv -fexcess-precision=standard -Wno-format-truncation -Wno-stringop-truncation -g -O0 -I../../../src/include  -D_GNU_SOURCE   -c -o postgres.o postgres.c
+gcc -Wall -Wmissing-prototypes -Wpointer-arith -Wdeclaration-after-statement -Werror=vla -Wendif-labels -Wmissing-format-attribute -Wimplicit-fallthrough=3 -Wcast-function-type -Wformat-security -fno-strict-aliasing -fwrapv -fexcess-precision=standard -Wno-format-truncation -Wno-stringop-truncation -g -O0 -I../../../src/include  -D_GNU_SOURCE   -c -o pquery.o pquery.c
