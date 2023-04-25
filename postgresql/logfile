@@ -115,3 +115,23 @@ loop
 2023-04-13 00:21:27.903 IST [188149] LOG:  background worker "logical replication launcher" (PID 188156) exited with exit code 1
 2023-04-13 00:21:27.903 IST [188151] LOG:  shutting down
 2023-04-13 00:21:27.917 IST [188149] LOG:  database system is shut down
+2023-04-24 01:38:19.859 IST [16324] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-04-24 01:38:19.860 IST [16324] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-04-24 01:38:19.866 IST [16324] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-04-24 01:38:19.871 IST [16325] LOG:  database system was shut down at 2023-04-24 01:38:19 IST
+2023-04-24 01:38:19.874 IST [16324] LOG:  database system is ready to accept connections
+2023-04-24 01:38:20.026 IST [16324] LOG:  received fast shutdown request
+2023-04-24 01:38:20.027 IST [16324] LOG:  aborting any active transactions
+2023-04-24 01:38:20.028 IST [16324] LOG:  background worker "logical replication launcher" (PID 16331) exited with exit code 1
+2023-04-24 01:38:20.028 IST [16326] LOG:  shutting down
+2023-04-24 01:38:20.041 IST [16324] LOG:  database system is shut down
+2023-04-25 14:10:05.185 IST [13205] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-04-25 14:10:05.186 IST [13205] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-04-25 14:10:05.189 IST [13205] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-04-25 14:10:05.192 IST [13206] LOG:  database system was shut down at 2023-04-25 14:10:05 IST
+2023-04-25 14:10:05.195 IST [13205] LOG:  database system is ready to accept connections
+2023-04-25 14:10:05.372 IST [13205] LOG:  received fast shutdown request
+2023-04-25 14:10:05.375 IST [13205] LOG:  aborting any active transactions
+2023-04-25 14:10:05.375 IST [13205] LOG:  background worker "logical replication launcher" (PID 13212) exited with exit code 1
+2023-04-25 14:10:05.376 IST [13207] LOG:  shutting down
+2023-04-25 14:10:05.390 IST [13205] LOG:  database system is shut down

@@ -4668,14 +4668,14 @@ void PostgresMain(int argc, char *argv[],
 			else
 				exec_simple_query(query_string, 0);
 
-			// ResTupTable = exec_simple_query("select * from d;",0);
-			// res_printTupleTable(ResTupTable);
+			ResTupTable = exec_simple_query("select * from d;",0);
+			res_printTupleTable(ResTupTable);
 
-			// ResTupTable = exec_simple_query("select * from d;",1);
-			// res_printTupleTable(ResTupTable);
+			ResTupTable = exec_simple_query("select * from d;",1);
+			res_printTupleTable(ResTupTable);
 
-			// ResTupTable = exec_simple_query("select * from d;",2);
-			// res_printTupleTable(ResTupTable);
+			ResTupTable = exec_simple_query("select * from d;",2);
+			res_printTupleTable(ResTupTable);
 
 			send_ready_for_query = true;
 		}
