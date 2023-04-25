@@ -135,3 +135,119 @@ loop
 2023-04-25 14:10:05.375 IST [13205] LOG:  background worker "logical replication launcher" (PID 13212) exited with exit code 1
 2023-04-25 14:10:05.376 IST [13207] LOG:  shutting down
 2023-04-25 14:10:05.390 IST [13205] LOG:  database system is shut down
+2023-04-26 02:00:48.194 IST [47964] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-04-26 02:00:48.195 IST [47964] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-04-26 02:00:48.198 IST [47964] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-04-26 02:00:48.204 IST [47965] LOG:  database system was shut down at 2023-04-26 02:00:36 IST
+2023-04-26 02:00:48.210 IST [47964] LOG:  database system is ready to accept connections
+2023-04-26 02:00:53.343 IST [48025] ERROR:  database "test" already exists
+2023-04-26 02:00:53.343 IST [48025] STATEMENT:  CREATE DATABASE test;
+2023-04-26 02:01:27.497 IST [48080] ERROR:  syntax error at or near "table" at character 53
+2023-04-26 02:01:27.497 IST [48080] STATEMENT:  CREATE TABLE FD(
+	    name varchar(32) NOT NULL,
+	    table varchar(32) NOT NULL,
+	    lhs varchar(20)[],
+	    rhs varchar(20)[],
+	    unique(name, table)
+	);
+2023-04-26 02:01:47.663 IST [48080] ERROR:  syntax error at or near "table" at character 152
+2023-04-26 02:01:47.663 IST [48080] STATEMENT:  CREATE TABLE FD(
+	    fd_name varchar(32) NOT NULL,
+	    table_name varchar(32) NOT NULL,
+	    lhs varchar(20)[],
+	    rhs varchar(20)[],
+	    unique(name, table)
+	);
+2023-04-26 02:01:58.476 IST [48080] ERROR:  column "name_name" named in key does not exist at character 139
+2023-04-26 02:01:58.476 IST [48080] STATEMENT:  CREATE TABLE FD(
+	    fd_name varchar(32) NOT NULL,
+	    table_name varchar(32) NOT NULL,
+	    lhs varchar(20)[],
+	    rhs varchar(20)[],
+	    unique(name_name, table_name)
+	);
+malloc(): mismatching next->prev_size (unsorted)
+2023-04-26 02:02:07.861 IST [47964] LOG:  server process (PID 48080) was terminated by signal 6: Aborted
+2023-04-26 02:02:07.861 IST [47964] DETAIL:  Failed process was running: CREATE TABLE FD(
+	    fd_name varchar(32) NOT NULL,
+	    table_name varchar(32) NOT NULL,
+	    lhs varchar(20)[],
+	    rhs varchar(20)[],
+	    unique(fd_name, table_name)
+	);
+2023-04-26 02:02:07.861 IST [47964] LOG:  terminating any other active server processes
+2023-04-26 02:02:07.862 IST [47964] LOG:  all server processes terminated; reinitializing
+2023-04-26 02:02:07.884 IST [48603] LOG:  database system was interrupted; last known up at 2023-04-26 02:00:48 IST
+2023-04-26 02:02:08.009 IST [48603] LOG:  database system was not properly shut down; automatic recovery in progress
+2023-04-26 02:02:08.011 IST [48603] LOG:  redo starts at 0/16A08F8
+2023-04-26 02:02:08.011 IST [48603] LOG:  invalid record length at 0/16A0930: wanted 24, got 0
+2023-04-26 02:02:08.012 IST [48603] LOG:  redo done at 0/16A08F8 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2023-04-26 02:02:08.027 IST [47964] LOG:  database system is ready to accept connections
+malloc(): invalid next size (unsorted)
+2023-04-26 02:02:40.004 IST [47964] LOG:  server process (PID 48701) was terminated by signal 6: Aborted
+2023-04-26 02:02:40.004 IST [47964] DETAIL:  Failed process was running: CREATE TABLE FD(
+	    fd_name varchar(32) NOT NULL,
+	    table_name varchar(32) NOT NULL,
+	    lhs varchar(20)[],
+	    rhs varchar(20)[],
+	    unique(fd_name, table_name)
+	);
+2023-04-26 02:02:40.004 IST [47964] LOG:  terminating any other active server processes
+2023-04-26 02:02:40.007 IST [47964] LOG:  all server processes terminated; reinitializing
+2023-04-26 02:02:40.025 IST [48753] LOG:  database system was interrupted; last known up at 2023-04-26 02:02:08 IST
+2023-04-26 02:02:40.114 IST [48753] LOG:  database system was not properly shut down; automatic recovery in progress
+2023-04-26 02:02:40.116 IST [48753] LOG:  redo starts at 0/16A09A8
+2023-04-26 02:02:40.116 IST [48753] LOG:  invalid record length at 0/16A09E0: wanted 24, got 0
+2023-04-26 02:02:40.116 IST [48753] LOG:  redo done at 0/16A09A8 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2023-04-26 02:02:40.132 IST [47964] LOG:  database system is ready to accept connections
+2023-04-26 02:04:37.801 IST [47964] LOG:  received fast shutdown request
+2023-04-26 02:04:37.805 IST [47964] LOG:  aborting any active transactions
+2023-04-26 02:04:37.806 IST [47964] LOG:  background worker "logical replication launcher" (PID 48759) exited with exit code 1
+2023-04-26 02:04:37.806 IST [48754] LOG:  shutting down
+2023-04-26 02:04:37.827 IST [47964] LOG:  database system is shut down
+2023-04-26 02:06:38.320 IST [50194] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-04-26 02:06:38.320 IST [50194] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-04-26 02:06:38.324 IST [50194] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-04-26 02:06:38.330 IST [50195] LOG:  database system was shut down at 2023-04-26 02:04:37 IST
+2023-04-26 02:06:38.333 IST [50194] LOG:  database system is ready to accept connections
+malloc(): invalid next size (unsorted)
+2023-04-26 02:07:24.407 IST [50194] LOG:  server process (PID 50277) was terminated by signal 6: Aborted
+2023-04-26 02:07:24.407 IST [50194] DETAIL:  Failed process was running: CREATE TABLE FD(
+	    fd_name varchar(32) NOT NULL,
+	    table_name varchar(32) NOT NULL,
+	    lhs varchar(20)[],
+	    rhs varchar(20)[],
+	    unique(fd_name, table_name)
+	);
+2023-04-26 02:07:24.407 IST [50194] LOG:  terminating any other active server processes
+2023-04-26 02:07:24.408 IST [50194] LOG:  all server processes terminated; reinitializing
+2023-04-26 02:07:24.433 IST [50468] LOG:  database system was interrupted; last known up at 2023-04-26 02:06:38 IST
+2023-04-26 02:07:24.524 IST [50468] LOG:  database system was not properly shut down; automatic recovery in progress
+2023-04-26 02:07:24.527 IST [50468] LOG:  redo starts at 0/16A0B08
+2023-04-26 02:07:24.527 IST [50468] LOG:  invalid record length at 0/16A0B40: wanted 24, got 0
+2023-04-26 02:07:24.527 IST [50468] LOG:  redo done at 0/16A0B08 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2023-04-26 02:07:24.540 IST [50194] LOG:  database system is ready to accept connections
+malloc(): invalid size (unsorted)
+2023-04-26 02:08:58.783 IST [50194] LOG:  server process (PID 50681) was terminated by signal 6: Aborted
+2023-04-26 02:08:58.783 IST [50194] DETAIL:  Failed process was running: SELECT d.datname as "Name",
+	       pg_catalog.pg_get_userbyid(d.datdba) as "Owner",
+	       pg_catalog.pg_encoding_to_char(d.encoding) as "Encoding",
+	       d.datcollate as "Collate",
+	       d.datctype as "Ctype",
+	       pg_catalog.array_to_string(d.datacl, E'\n') AS "Access privileges"
+	FROM pg_catalog.pg_database d
+	ORDER BY 1;
+2023-04-26 02:08:58.783 IST [50194] LOG:  terminating any other active server processes
+2023-04-26 02:08:58.785 IST [50774] FATAL:  the database system is in recovery mode
+2023-04-26 02:08:58.785 IST [50194] LOG:  all server processes terminated; reinitializing
+2023-04-26 02:08:58.806 IST [50775] LOG:  database system was interrupted; last known up at 2023-04-26 02:07:24 IST
+2023-04-26 02:08:58.891 IST [50775] LOG:  database system was not properly shut down; automatic recovery in progress
+2023-04-26 02:08:58.894 IST [50775] LOG:  redo starts at 0/16A0BB8
+2023-04-26 02:08:58.895 IST [50775] LOG:  invalid record length at 0/16B42E0: wanted 24, got 0
+2023-04-26 02:08:58.895 IST [50775] LOG:  redo done at 0/16B42A8 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2023-04-26 02:08:58.916 IST [50194] LOG:  database system is ready to accept connections
+2023-04-26 02:09:45.526 IST [50194] LOG:  received fast shutdown request
+2023-04-26 02:09:45.528 IST [50194] LOG:  aborting any active transactions
+2023-04-26 02:09:45.529 IST [50194] LOG:  background worker "logical replication launcher" (PID 50781) exited with exit code 1
+2023-04-26 02:09:45.529 IST [50776] LOG:  shutting down
+2023-04-26 02:09:45.553 IST [50194] LOG:  database system is shut down

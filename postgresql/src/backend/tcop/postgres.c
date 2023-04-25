@@ -249,7 +249,6 @@ void res_addNameToHeader(struct Header* h, char* name, int type_id){
     h->type_ids[h->nvalid++] = type_id;
 }
 
-
 void res_printRow(struct Row* r){
 	if( r == NULL){
 		printf("NULL ROW\n");
@@ -375,8 +374,6 @@ void res_printTupleTable(struct TupleTable *t)
 
     printf("--------------------------------------------------------------------\n");
 }
-
-
 
 
 
@@ -4099,6 +4096,239 @@ void process_postgres_switches(int argc, char *argv[], GucContext ctx,
 #endif
 }
 
+
+
+/**
+ * ---------------------------------------------------------------------------------------
+ * 		                     Query Processing Utilities						              *
+ * ---------------------------------------------------------------------------------------
+*/
+
+
+/*
+convert a string to lower case
+*/
+char* lower_case_str(char* str){
+
+	if(str == NULL) return NULL;\
+	if(strlen(str) == 0) return str;
+
+	char* lower_case_str = (char*)malloc(strlen(str)+1);
+
+	strcpy(lower_case_str, str);
+
+	for(int i=0; i<strlen(lower_case_str); i++){
+		if(lower_case_str[i] >= 'A' && lower_case_str[i] <= 'Z'){
+			lower_case_str[i] = lower_case_str[i] + 32;
+		}
+	}
+
+	return lower_case_str;
+}
+
+/**
+ * Parses a bracketed list of values and returns an array of strings
+ * @param a string of the form       "(5, 6, 'hello', 7.52, 'bye')""
+ * @return char** : array of strings of the form [ '5', '6', 'hello', '7.52' , 'bye' ]
+ */
+char** parse_values_list(char* values, int* num_items){
+    
+        if(values == NULL) return NULL;
+        char* copy_values = (char*)malloc(strlen(values)+1);
+        char** result = (char**)malloc(10*sizeof(char*));
+        char* token;
+        char tmp[100];
+        bool attr_started;
+        bool string_attr;
+    
+        strcpy(copy_values, values);
+
+        int i = 0;
+        while(copy_values[i] == ' ') i++;
+        if(copy_values[i] != '(') return NULL;
+        copy_values = copy_values + i+1;
+
+        token = strtok(copy_values, ")");
+        if(token == NULL) return NULL;
+        token[strlen(token)] = ' ';
+
+        attr_started = false;
+        string_attr = false;
+
+        *num_items = 0;
+        int j = 0;
+        for(int i = 0; i < strlen(token); i++){
+            if(!attr_started){
+                while(token[i] == ' ' || token[i] == ',') i++;
+                attr_started = true;
+
+                if(token[i] == '\''){
+                    string_attr = true;
+                }
+                else{
+                    string_attr = false;
+                    tmp[j++] = token[i];
+                }
+            }
+            else{
+                    if( (string_attr && token[i] == '\'') || !string_attr && (token[i] == ' ' || token[i] == ',') ){
+                        tmp[j] = '\0';
+
+                        result[*num_items] = (char*)malloc(strlen(tmp)+1);
+                        strcpy(result[(*num_items)++], tmp);
+                        
+                        attr_started = false;
+                        j = 0;
+
+                    }
+                    else{
+                        tmp[j++] = token[i];
+                    }
+                }
+            }
+
+
+        return result;
+}
+
+
+/*
+it returns the insert values list, for insert queries of type ``ins into table values(.....);``
+Otherwise returns NULL.
+*/
+char ** insert_parse(char* query_string, int* num_vals, char* table_name){
+
+	if(strlen(query_string) == 0) return NULL;
+
+	char* copy_query_string = (char*)malloc(strlen(query_string)+1);
+	strcpy(copy_query_string, query_string);
+
+
+	char* token1 = strtok(copy_query_string, " ");  if(token1 == NULL) return NULL;
+	char* token2 = strtok(NULL, " ");          if(token2 == NULL) return NULL;
+	char* token3 = strtok(NULL, " ");          if(token3 == NULL) return NULL;
+	char* token4 = strtok(NULL, ";");          if(token4 == NULL) return NULL;
+
+	token1 = lower_case_str(token1);
+	token2 = lower_case_str(token2);
+	token3 = lower_case_str(token3);
+	char * token4_lower = lower_case_str(token4);
+
+	/*if its not an insert query*/
+	if( strcmp(token1, "insert") != 0 || strcmp(token2, "into") != 0){
+		return NULL;
+	}
+
+    /*if the insert is not using values(.........) OR if insert is into FD table*/
+    char* token4_substr = (char*)malloc(7);
+    strncpy(token4_substr, token4_lower, 6);
+    if(strcmp(token4_substr, "values") != 0 || strcmp(token3, "fd") == 0){
+    	return NULL;
+    }
+
+    char* values_tuple = token4 + 6;
+    int num_items = 0;
+
+    char** values = parse_values_list(values_tuple, &num_items);
+	*num_vals = num_items;
+
+	strcpy(table_name, token3);
+
+
+	free(copy_query_string);
+	free(token4_lower);
+	free(token4_substr);
+
+    return values;
+
+}
+
+
+/*
+Takes a COMPOSITE query string as input and executes each query one by one, if FD contraints are satisfied.
+*/
+void exec_multiple(const char * query_string){
+
+	if(query_string == NULL) return NULL;
+	if(strlen(query_string) == 0) return query_string;
+
+	char** values;
+	char* table_name = (char*)malloc(25);
+	int num_vals;
+	struct TupleTable* HeaderTable;
+	struct TupleTable* FDTable;
+
+	char* token = strtok(query_string, ";");
+
+	while(token != NULL){
+		num_vals = 0;
+		values = insert_parse(token,&num_vals, table_name);
+
+		if(values != NULL){
+			// the query is an insert query. So check the FD constraints.
+
+			/**
+			 *This query is to get the Header info of the Table.
+			*Query: select * from <table_name> where 1=1;
+			*/
+			char* select_query = (char*)malloc(strlen(table_name) + 30);
+			strcpy(select_query, "select * from ");
+			strcat(select_query, table_name);
+			strcat(select_query, ";");
+
+			HeaderTable = exec_simple_query(select_query, 1);
+			res_printTupleTable(HeaderTable);
+			
+
+			/**
+			 * FD Query: select * from fd where table = <table_name>
+			 * this query is to get all the fd's registered on this table.
+			 */
+			char* fd_query = (char*)malloc(strlen(table_name) + 30);
+			strcpy(fd_query, "select * from fd where table_name = '");
+			strcat(fd_query, table_name);
+			strcat(fd_query, "' ;");
+
+			FDTable = exec_simple_query(fd_query, 2);
+			res_printTupleTable(FDTable);
+
+
+			//free malloced memory + returned malloced memory.
+			free(select_query);
+			free(fd_query);
+			free(HeaderTable);
+			free(FDTable);
+
+		}
+
+		char* orig_query = (char*)malloc(strlen(token)+1);
+		strcpy(orig_query, token);
+		strcat(orig_query, ";");
+
+		exec_simple_query(orig_query, 0);
+
+		//free malloced memory
+		free(orig_query);
+
+		token = strtok(NULL, ";");
+
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ----------------------------------------------------------------
  * PostgresMain
  *	   postgres main loop -- all backends, interactive or otherwise start here
@@ -4663,19 +4893,13 @@ void PostgresMain(int argc, char *argv[],
 			if (am_walsender)
 			{
 				if (!exec_replication_command(query_string))
-					exec_simple_query(query_string, 0);
+					exec_multiple(query_string);
 			}
 			else
-				exec_simple_query(query_string, 0);
+				exec_multiple(query_string);
 
-			ResTupTable = exec_simple_query("select * from d;",0);
-			res_printTupleTable(ResTupTable);
-
-			ResTupTable = exec_simple_query("select * from d;",1);
-			res_printTupleTable(ResTupTable);
-
-			ResTupTable = exec_simple_query("select * from d;",2);
-			res_printTupleTable(ResTupTable);
+			// ResTupTable = exec_simple_query("select * from d;",0);
+			// res_printTupleTable(ResTupTable);
 
 			send_ready_for_query = true;
 		}

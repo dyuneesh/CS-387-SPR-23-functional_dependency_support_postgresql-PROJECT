@@ -1,7 +1,13 @@
-CREATE TABLE FD(
-    name varchar(32) NOT NULL,
-    table varchar(32) NOT NULL,
-    lhs varchar(20)[],
-    rhs varchar(20)[],
-    unique(name, table)
-)
+-- CREATE TABLE FD(
+--     fd_name varchar(32) NOT NULL,
+--     table_name varchar(32) NOT NULL,
+--     lhs varchar(20)[],
+--     rhs varchar(20)[],
+--     unique(fd_name, table_name)
+-- );
+
+CREATE TABLE test(
+    a int,
+    b int,
+    c int
+);
