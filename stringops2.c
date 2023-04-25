@@ -94,6 +94,53 @@ char** parse_values_list(char* values, int* num_items){
 }
 
 
+// struct TupleTable* get_fd_sample(){
+//     struct TupleTable* t = (struct TupleTable*)malloc(sizeof(struct TupleTable));
+//     t->num_rows = 3;
+//     t->nattrs = 4;
+
+
+
+// }
+
+
+char* fd_check_query(char** values, char** attrs, int nattrs, char** lhs, int nlhs, char** rhs, int nrhs, char* table_name){
+    
+        char* query = (char*)malloc(1000);
+    
+        strcpy(query, "select * from ");
+        strcat(query, table_name);
+        strcat(query, "\nwhere\n");
+
+        for(int i = 0; i < nlhs; i++){
+            for(int j = 0; j < nattrs; j++){
+                if(strcmp(lhs[i], attrs[j]) == 0){
+                    strcat(query, attrs[j]);
+                    strcat(query, " = ");
+                    strcat(query, values[j]);
+                }
+            }
+            if( i != nlhs-1 ) strcat(query, " and\n");
+            else strcat(query, "\nAND(\n");
+        }
+
+        for(int i = 0; i < nrhs; i++){
+            for(int j = 0; j < nattrs; j++){
+                if(strcmp(rhs[i], attrs[j]) == 0){
+                    strcat(query, "\t");
+                    strcat(query, attrs[j]);
+                    strcat(query, " <> ");
+                    strcat(query, values[j]);
+                }
+            }
+            if( i != nrhs-1 ) strcat(query, " or\n");
+            else strcat(query, "\n   )\n");
+        }
+    
+        return query;
+}
+
+
 /*
 Takes a SINGLE query string as input and returns the modified query string
 That Checks the Functional Dependency constraints.
@@ -131,27 +178,64 @@ char * fd_mod(char* query_string, struct TupleTable* tuple_table){
     char* values_tuple = token4 + 6;
     int num_items = 0;
 
-    char** values = parse_values_list(values_tuple, &num_items);
+    // char** values = parse_values_list(values_tuple, &num_items);
 
-    for(int i = 0; i < num_items; i++){
-    	printf("\"%s\"\n", values[i]);
-    }
+    // for(int i = 0; i < num_items; i++){
+    // 	printf("\"%s\"\n", values[i]);
+    // }
+
+
+    /**
+     *This query is to get the Header info of the Table.
+     *Query: select * from <table_name> where 1=1;
+    */
+    char* table_name = token3;
+
+    char* select_query = (char*)malloc(strlen(table_name) + 30);
+    strcpy(select_query, "select * from ");
+    strcat(select_query, table_name);
+    strcat(select_query, " where 1=1 ;");
+    
+
+    /**
+     * FD Query: select * from fd where table = <table_name>
+     * this query is to get all the fd's registered on this table.
+     */
+    char* fd_query = (char*)malloc(strlen(table_name) + 30);
+    strcpy(fd_query, "select * from fd where table = ");
+    strcat(fd_query, table_name);
+    strcat(fd_query, " ;");
+
+
+
+
 
     return copy_query_string;
 
 }
 
+
+
+
+
 int main(){
 
-    // //test in a loop.
-    while(1){
-        char query_string[1000];
-        printf("Enter query: ");
-        scanf("%[^\n]%*c", query_string);
+    // test fd check query.
 
-        char* modified_query_string = fd_mod(query_string);
+    char* values[] = {"'a'", "'b'", "'c'", "'d'"};
+    char* attrs[] = {"a", "b", "c", "d"};
+    int nattrs = 4;
 
-        printf("Modified query: %s\n", modified_query_string);
-    }
+    char* lhs[] = {"d", "a"};
+    int nlhs = 2;
+
+    char* rhs[] = {"b", "c"};
+    int nrhs = 2;
+
+    char* table_name = "test";
+
+    char* query = fd_check_query(values, attrs, nattrs, lhs, nlhs, rhs, nrhs, table_name);
+
+    printf("%s\n", query);
 
 }
