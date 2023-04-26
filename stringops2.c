@@ -27,6 +27,19 @@ char* lower_case_str(char* str){
 	return lower_case_str;
 }
 
+char* strip_space(char* input){
+    int i = 0;
+    while(input[i] == ' ') i++;
+
+
+    int j = strlen(input)-1;
+    while(input[j] == ' ') j--;
+
+    char* result = (char*)malloc(j-i+2);
+    strncpy(result, input+i, j-i+1);
+
+    return result;
+}
 
 
 /**
@@ -94,14 +107,45 @@ char** parse_values_list(char* values, int* num_items){
 }
 
 
-// struct TupleTable* get_fd_sample(){
-//     struct TupleTable* t = (struct TupleTable*)malloc(sizeof(struct TupleTable));
-//     t->num_rows = 3;
-//     t->nattrs = 4;
+/*
+Parses a Functional dependency LHS/RHS into a list of values.
+"{a,b,c}" ==> [ "a" , "b" , "c" ]
+*/
+char** parse_fd(char* fd_string, int* num_attrs){
+
+    if(fd_string == NULL || strlen(fd_string) == 0){
+        *num_attrs = 0;
+        return NULL;
+    }
+
+    for(int i = 0; i < strlen(fd_string); i++){
+        if(fd_string[i] == ',') (*num_attrs)++;
+    }
+    (*num_attrs)++;
 
 
+    char* copy_fd_string = (char*)malloc(strlen(fd_string)+1);
+    strcpy(copy_fd_string, fd_string); 
 
-// }
+    char** result = (char**)malloc((*num_attrs)*sizeof(char*));
+    char* token;
+
+    token = strtok(copy_fd_string, "{,}");
+    if(token == NULL) return NULL;
+
+    for(int i = 0; i < *num_attrs; i++){
+        result[i] = strip_space(token);
+        token = strtok(NULL, "{,}");
+    }
+
+
+    //freeing malloced memory.
+    free(copy_fd_string);
+
+    return result;
+
+}
+
 
 
 char* fd_check_query(char** values, char** attrs, int nattrs, char** lhs, int nlhs, char** rhs, int nrhs, char* table_name){
@@ -220,22 +264,32 @@ char * fd_mod(char* query_string, struct TupleTable* tuple_table){
 
 int main(){
 
-    // test fd check query.
+    // // test fd check query.
 
-    char* values[] = {"'a'", "'b'", "'c'", "'d'"};
-    char* attrs[] = {"a", "b", "c", "d"};
-    int nattrs = 4;
+    // char* values[] = {"'a'", "'b'", "'c'", "'d'"};
+    // char* attrs[] = {"a", "b", "c", "d"};
+    // int nattrs = 4;
 
-    char* lhs[] = {"d", "a"};
-    int nlhs = 2;
+    // char* lhs[] = {"d", "a"};
+    // int nlhs = 2;
 
-    char* rhs[] = {"b", "c"};
-    int nrhs = 2;
+    // char* rhs[] = {"b", "c"};
+    // int nrhs = 2;
 
-    char* table_name = "test";
+    // char* table_name = "test";
 
-    char* query = fd_check_query(values, attrs, nattrs, lhs, nlhs, rhs, nrhs, table_name);
+    // char* query = fd_check_query(values, attrs, nattrs, lhs, nlhs, rhs, nrhs, table_name);
 
-    printf("%s\n", query);
+    // printf("%s\n", query);
+
+
+    //test fd parse/..
+    char* fd_string = "{apple, ball, cat,dumo}";
+    int num_attrs = 0;
+    char** attrs = parse_fd(fd_string, &num_attrs);
+
+    for(int i = 0; i < num_attrs; i++){
+        printf("%s\n", attrs[i]);
+    }
 
 }
