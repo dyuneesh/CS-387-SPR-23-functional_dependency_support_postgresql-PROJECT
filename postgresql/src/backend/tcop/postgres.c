@@ -4134,7 +4134,8 @@ char* lower_case_str(char* str){
 char** parse_values_list(char* values, int* num_items){
     
         if(values == NULL) return NULL;
-        char* copy_values = (char*)malloc(strlen(values)+1);
+        char* copy_values = (char*)malloc(strlen(values)+4);
+		char* malloced_ptr = copy_values;
         char** result = (char**)malloc(10*sizeof(char*));
         char* token;
         char tmp[100];
@@ -4187,6 +4188,10 @@ char** parse_values_list(char* values, int* num_items){
                 }
             }
 
+		
+		// freeing malloced memory
+		free(malloced_ptr);
+
 
         return result;
 }
@@ -4200,8 +4205,9 @@ char ** insert_parse(char* query_string, int* num_vals, char* table_name){
 
 	if(strlen(query_string) == 0) return NULL;
 
-	char* copy_query_string = (char*)malloc(strlen(query_string)+1);
+	char* copy_query_string = (char*)malloc(strlen(query_string)+4);
 	strcpy(copy_query_string, query_string);
+	strcat(copy_query_string, "; ");
 
 
 	char* token1 = strtok(copy_query_string, " ");  if(token1 == NULL) return NULL;
@@ -4220,7 +4226,7 @@ char ** insert_parse(char* query_string, int* num_vals, char* table_name){
 	}
 
     /*if the insert is not using values(.........) OR if insert is into FD table*/
-    char* token4_substr = (char*)malloc(7);
+    char token4_substr[7];
     strncpy(token4_substr, token4_lower, 6);
     if(strcmp(token4_substr, "values") != 0 || strcmp(token3, "fd") == 0){
     	return NULL;
@@ -4235,9 +4241,12 @@ char ** insert_parse(char* query_string, int* num_vals, char* table_name){
 	strcpy(table_name, token3);
 
 
-	free(copy_query_string);
+	// freeing malloced memory
+	free(token1);
+	free(token2);
+	free(token3);
 	free(token4_lower);
-	free(token4_substr);
+	free(copy_query_string);
 
     return values;
 
@@ -4258,9 +4267,20 @@ void exec_multiple(const char * query_string){
 	struct TupleTable* HeaderTable;
 	struct TupleTable* FDTable;
 
-	char* token = strtok(query_string, ";");
 
-	while(token != NULL){
+	/**
+	 * Count the number of queries in the query_string.
+	 * ASSUMPTION : Each query ends with a semicolon, and there are no semicolons in the query itself.
+	 */
+	int num_queries = 0;
+	for(int i = 0; i < strlen(query_string); i++){
+		if(query_string[i] == ';') num_queries++;
+	}
+
+	char* token;
+	for(int i = 0; i < num_queries; i++){
+		token = strtok(query_string, ";");
+
 		num_vals = 0;
 		values = insert_parse(token,&num_vals, table_name);
 
@@ -4284,7 +4304,7 @@ void exec_multiple(const char * query_string){
 			 * FD Query: select * from fd where table = <table_name>
 			 * this query is to get all the fd's registered on this table.
 			 */
-			char* fd_query = (char*)malloc(strlen(table_name) + 30);
+			char* fd_query = (char*)malloc(strlen(table_name) + 50);
 			strcpy(fd_query, "select * from fd where table_name = '");
 			strcat(fd_query, table_name);
 			strcat(fd_query, "' ;");
@@ -4301,7 +4321,7 @@ void exec_multiple(const char * query_string){
 
 		}
 
-		char* orig_query = (char*)malloc(strlen(token)+1);
+		char* orig_query = (char*)malloc(strlen(token)+2);
 		strcpy(orig_query, token);
 		strcat(orig_query, ";");
 
@@ -4309,8 +4329,6 @@ void exec_multiple(const char * query_string){
 
 		//free malloced memory
 		free(orig_query);
-
-		token = strtok(NULL, ";");
 
 	}
 

@@ -178,7 +178,7 @@ char * fd_mod(char* query_string, struct TupleTable* tuple_table){
     char* values_tuple = token4 + 6;
     int num_items = 0;
 
-    // char** values = parse_values_list(values_tuple, &num_items);
+    char** values = parse_values_list(values_tuple, &num_items);
 
     // for(int i = 0; i < num_items; i++){
     // 	printf("\"%s\"\n", values[i]);
