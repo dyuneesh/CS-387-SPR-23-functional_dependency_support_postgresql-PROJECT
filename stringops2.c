@@ -259,7 +259,24 @@ char * fd_mod(char* query_string, struct TupleTable* tuple_table){
 }
 
 
+char** split_query(char* query_string, int* num_queries){
 
+    *num_queries = 0;
+	if(query_string == NULL || strlen(query_string) == 0) return NULL;
+
+	char** result = (char**)malloc(10*sizeof(char*));
+    char* token;
+
+    token = strtok(query_string, ";");
+    while(token != NULL){
+        result[*num_queries] = (char*)malloc(strlen(token)+1);
+        strcpy(result[*num_queries], token);
+        (*num_queries)++;
+        token = strtok(NULL, ";");
+    }
+
+    return result;
+}
 
 
 int main(){
@@ -283,13 +300,39 @@ int main(){
     // printf("%s\n", query);
 
 
-    //test fd parse/..
-    char* fd_string = "{apple, ball, cat,dumo}";
-    int num_attrs = 0;
-    char** attrs = parse_fd(fd_string, &num_attrs);
+    // //test fd parse/..
+    // char* fd_string = "{apple, ball, cat,dumo}";
+    // int num_attrs = 0;
+    // char** attrs = parse_fd(fd_string, &num_attrs);
 
-    for(int i = 0; i < num_attrs; i++){
-        printf("%s\n", attrs[i]);
+    // for(int i = 0; i < num_attrs; i++){
+    //     printf("%s\n", attrs[i]);
+    // }
+
+
+    // //test multiple query.
+    // char* query = (char*)malloc(1000);
+    // strcpy(query,"insert into test values(5,6,7); insert into test values(5,6,8);");
+    // char* token;
+
+    // token = strtok(query, ";");
+    // while(token != NULL){
+    //     printf("%s\n", token);
+    //     token = strtok(NULL, ";");
+    // }
+
+
+    //test split query.
+    char* query = (char*)malloc(1000);
+    strcpy(query,"; ; ;; ;; insert into test values(5,6,7); ; ; ;; ;; ; insert into test values(5,6,8);;;");
+    int num_queries = 0;
+    char** queries = split_query(query, &num_queries);
+
+    for(int i = 0; i < num_queries; i++){
+        printf("%s\n", queries[i]);
     }
 
+    printf("%d\n", num_queries);
+
+    return 0;
 }

@@ -4126,6 +4126,27 @@ char* lower_case_str(char* str){
 	return lower_case_str;
 }
 
+
+/*
+strips trailing, leading white space...
+*/
+char* strip_space(char* input){
+    int i = 0;
+    while(input[i] == ' ') i++;
+
+
+    int j = strlen(input)-1;
+    while(input[j] == ' ') j--;
+
+    char* result = (char*)malloc(j-i+2);
+    strncpy(result, input+i, j-i+1);
+
+	result[j-i+1] = '\0';
+
+    return result;
+}
+
+
 /**
  * Parses a bracketed list of values and returns an array of strings
  * @param a string of the form       "(5, 6, 'hello', 7.52, 'bye')""
@@ -4198,12 +4219,91 @@ char** parse_values_list(char* values, int* num_items){
 
 
 /*
+Parses a Functional dependency LHS/RHS into a list of values.
+"{a,b,c}" ==> [ "a" , "b" , "c" ]
+*/
+char** parse_fd(char* fd_string, int* num_attrs){
+
+    *num_attrs = 0;
+
+    if(fd_string == NULL || strlen(fd_string) == 0){
+        return NULL;
+    }
+
+    for(int i = 0; i < strlen(fd_string); i++){
+        if(fd_string[i] == ',') (*num_attrs)++;
+    }
+    (*num_attrs)++;
+
+
+    char* copy_fd_string = (char*)malloc(strlen(fd_string)+1);
+    strcpy(copy_fd_string, fd_string); 
+
+    char** result = (char**)malloc((*num_attrs)*sizeof(char*));
+    char* token;
+
+    token = strtok(copy_fd_string, "{,}");
+    if(token == NULL) return NULL;
+
+    for(int i = 0; i < *num_attrs; i++){
+        result[i] = strip_space(token);
+        token = strtok(NULL, "{,}");
+    }
+
+
+    //freeing malloced memory.
+    free(copy_fd_string);
+
+    return result;
+
+}
+
+
+char* fd_check_query(char** values, char** attrs, int nattrs, char** lhs, int nlhs, char** rhs, int nrhs, char* table_name){
+    
+        char* query = (char*)malloc(1000);
+    
+        strcpy(query, "select * from ");
+        strcat(query, table_name);
+        strcat(query, "\nwhere\n");
+
+        for(int i = 0; i < nlhs; i++){
+            for(int j = 0; j < nattrs; j++){
+                if(strcmp(lhs[i], attrs[j]) == 0){
+                    strcat(query, attrs[j]);
+                    strcat(query, " = '");
+                    strcat(query, values[j]);
+					strcat(query, "'");
+                }
+            }
+            if( i != nlhs-1 ) strcat(query, " and\n");
+            else strcat(query, "\nAND(\n");
+        }
+
+        for(int i = 0; i < nrhs; i++){
+            for(int j = 0; j < nattrs; j++){
+                if(strcmp(rhs[i], attrs[j]) == 0){
+                    strcat(query, "\t");
+                    strcat(query, attrs[j]);
+                    strcat(query, " <> ");
+                    strcat(query, values[j]);
+                }
+            }
+            if( i != nrhs-1 ) strcat(query, " or\n");
+            else strcat(query, "\n   )\n");
+        }
+    
+        return query;
+}
+
+
+/*
 it returns the insert values list, for insert queries of type ``ins into table values(.....);``
 Otherwise returns NULL.
 */
 char ** insert_parse(char* query_string, int* num_vals, char* table_name){
 
-	if(strlen(query_string) == 0) return NULL;
+	if(query_string == NULL || strlen(query_string) == 0) return NULL;
 
 	char* copy_query_string = (char*)malloc(strlen(query_string)+4);
 	strcpy(copy_query_string, query_string);
@@ -4252,6 +4352,27 @@ char ** insert_parse(char* query_string, int* num_vals, char* table_name){
 
 }
 
+/*
+split a Composite query into multiple queries.
+*/
+char** split_query(char* query_string, int* num_queries){
+
+    *num_queries = 0;
+	if(query_string == NULL || strlen(query_string) == 0) return NULL;
+
+	char** result = (char**)malloc(10*sizeof(char*));
+    char* token;
+
+    token = strtok(query_string, ";");
+    while(token != NULL){
+        result[*num_queries] = (char*)malloc(strlen(token)+1);
+        strcpy(result[*num_queries], token);
+        (*num_queries)++;
+        token = strtok(NULL, ";");
+    }
+
+    return result;
+}
 
 
 /*
@@ -4262,25 +4383,30 @@ void exec_multiple(const char * query_string){
 	if(query_string == NULL) return NULL;
 	if(strlen(query_string) == 0) return query_string;
 
+
+
 	char** values;
 	char* table_name = (char*)malloc(25);
 	int num_vals;
 	struct TupleTable* HeaderTable;
 	struct TupleTable* FDTable;
+	struct TupleTable* CheckTable;
 
 
 	/**
-	 * Count the number of queries in the query_string.
-	 * ASSUMPTION : Each query ends with a semicolon, and there are no semicolons in the query itself.
+	 * ASSUMPTION : Each query ends with a semicolon, and there are no semicolons within the query itself.
 	 */
 	int num_queries = 0;
-	for(int i = 0; i < strlen(query_string); i++){
-		if(query_string[i] == ';') num_queries++;
-	}
+	char** queries = split_query(query_string, &num_queries);
+
 
 	char* token;
+
 	for(int i = 0; i < num_queries; i++){
-		token = strtok(query_string, ";");
+		token = queries[i];
+		bool execute = true;
+
+		if(token == NULL || strlen(token) == 0) continue;
 
 		num_vals = 0;
 		values = insert_parse(token,&num_vals, table_name);
@@ -4288,17 +4414,17 @@ void exec_multiple(const char * query_string){
 		if(values != NULL){
 			// the query is an insert query. So check the FD constraints.
 
-			/**
+			/*
 			 *This query is to get the Header info of the Table.
-			*Query: select * from <table_name> where 1=1;
-			*/
+			 *Query: select * from <table_name> where 1=1;
+			 */
 			char* select_query = (char*)malloc(strlen(table_name) + 30);
 			strcpy(select_query, "select * from ");
 			strcat(select_query, table_name);
 			strcat(select_query, ";");
 
 			HeaderTable = exec_simple_query(select_query, 1);
-			res_printTupleTable(HeaderTable);
+			// res_printTupleTable(HeaderTable);
 			
 
 			/**
@@ -4311,8 +4437,45 @@ void exec_multiple(const char * query_string){
 			strcat(fd_query, "' ;");
 
 			FDTable = exec_simple_query(fd_query, 2);
-			res_printTupleTable(FDTable);
+			// res_printTupleTable(FDTable);
 
+
+			struct Row* row;
+			struct Header* header;
+			char* fd_name;
+			char* lhs;
+			char* rhs;
+			char** lhs_arr;
+			char** rhs_arr;
+			char* check_query;
+
+			int nlhs;
+			int nrhs;
+			row = FDTable->head;
+			header = HeaderTable->header;
+			while(row != NULL){
+
+				fd_name = row->values[0];
+				lhs = row->values[2];
+				rhs = row->values[3];
+
+				
+				lhs_arr = parse_fd(lhs, &nlhs);
+				rhs_arr = parse_fd(rhs, &nrhs);
+
+
+				check_query = fd_check_query(values,header->names, header->nvalid, lhs_arr, nlhs, rhs_arr, nrhs,table_name);
+
+				CheckTable = exec_simple_query(check_query, 1);
+
+				if(CheckTable->num_rows != 0){
+					printf("[%d/%d] INVALID INSERT: FD(%s) : %s -> %s Failed\n", i+1 , num_queries ,  fd_name , lhs, rhs);
+					execute = false;
+					break;
+				}
+
+				row = row->next;
+			}
 
 			//free malloced memory + returned malloced memory.
 			free(select_query);
@@ -4322,6 +4485,8 @@ void exec_multiple(const char * query_string){
 
 		}
 
+		if(!execute) continue;
+		
 		char* orig_query = (char*)malloc(strlen(token)+2);
 		strcpy(orig_query, token);
 		strcat(orig_query, ";");
@@ -4330,15 +4495,12 @@ void exec_multiple(const char * query_string){
 
 		//free malloced memory
 		free(orig_query);
-
 	}
 
+	//free malloced memory
+	free(table_name);
+
 }
-
-
-
-
-
 
 
 
