@@ -4253,6 +4253,7 @@ char ** insert_parse(char* query_string, int* num_vals, char* table_name){
 }
 
 
+
 /*
 Takes a COMPOSITE query string as input and executes each query one by one, if FD contraints are satisfied.
 */
