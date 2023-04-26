@@ -4285,8 +4285,9 @@ char* fd_check_query(char** values, char** attrs, int nattrs, char** lhs, int nl
                 if(strcmp(rhs[i], attrs[j]) == 0){
                     strcat(query, "\t");
                     strcat(query, attrs[j]);
-                    strcat(query, " <> ");
+                    strcat(query, " <> '");
                     strcat(query, values[j]);
+					strcat(query, "'");
                 }
             }
             if( i != nrhs-1 ) strcat(query, " or\n");
@@ -4486,7 +4487,7 @@ void exec_multiple(const char * query_string){
 		}
 
 		if(!execute) continue;
-		
+
 		char* orig_query = (char*)malloc(strlen(token)+2);
 		strcpy(orig_query, token);
 		strcat(orig_query, ";");

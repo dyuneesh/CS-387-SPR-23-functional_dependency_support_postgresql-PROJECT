@@ -261,3 +261,13 @@ malloc(): invalid size (unsorted)
 2023-04-26 18:44:50.111 IST [51827] LOG:  background worker "logical replication launcher" (PID 51834) exited with exit code 1
 2023-04-26 18:44:50.111 IST [51829] LOG:  shutting down
 2023-04-26 18:44:50.131 IST [51827] LOG:  database system is shut down
+2023-04-26 19:39:04.470 IST [55562] LOG:  starting PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit
+2023-04-26 19:39:04.470 IST [55562] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-04-26 19:39:04.475 IST [55562] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-04-26 19:39:04.481 IST [55567] LOG:  database system was shut down at 2023-04-26 19:38:49 IST
+2023-04-26 19:39:04.484 IST [55562] LOG:  database system is ready to accept connections
+[1/1] INVALID INSERT: FD(d) : {c,a} -> {b,d,f} Failed
+[1/1] INVALID INSERT: FD(d) : {c,a} -> {b,d,f} Failed
+[1/1] INVALID INSERT: FD(d) : {c,a} -> {b,d,f} Failed
+[1/1] INVALID INSERT: FD(d) : {c,a} -> {b,d,f} Failed
+[1/1] INVALID INSERT: FD(d) : {c,a} -> {b,d,f} Failed
