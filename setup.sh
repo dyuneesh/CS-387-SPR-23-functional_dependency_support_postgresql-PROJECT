@@ -12,11 +12,11 @@ export PATH=${POSTGRES_INSTALLDIR}/bin:${PATH}
 export PGDATA=${POSTGRES_INSTALLDIR}/data
 
 
-install/bin/initdb -D ${PGDATA}
+# install/bin/initdb -D ${PGDATA}
 install/bin/pg_ctl -D $PGDATA -l logfile start
-install/bin/createdb -p 5432 test
+# install/bin/createdb -p 5432 test
 # install/bin/psql -p 5432 test
-install/bin/pg_ctl stop
+# install/bin/pg_ctl stop
 
 #SINGLE USER MODE
 # postgres --single -D ${PGDATA} test
