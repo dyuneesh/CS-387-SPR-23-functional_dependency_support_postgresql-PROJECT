@@ -4388,7 +4388,7 @@ char* create_trigger(char* table, char** lhs, int lhs_num , char** rhs, int rhs_
 
 
 
-	strcat(trigger_query, "CREATE TRIGGER trigger_");
+	strcat(trigger_query, "CREATE OR REPLACE TRIGGER trigger_");
 	strcat(trigger_query, table);
 	strcat(trigger_query, trigger_name);
 	strcat(trigger_query, "\nBEFORE INSERT ON ");
@@ -4414,8 +4414,7 @@ char ** insert_parse(char* query_string, int* num_vals, char* table_name, int* m
 
 	if(query_string == NULL || strlen(query_string) == 0) return NULL;
 
-	char* copy_query_string = (char*)malloc(strlen(query_string)+4);
-	strcpy(copy_query_string, query_string);
+	char* copy_query_string = strip_space(query_string);
 	strcat(copy_query_string, "; ");
 
 
@@ -4437,6 +4436,7 @@ char ** insert_parse(char* query_string, int* num_vals, char* table_name, int* m
     /*if the insert is not using values(.........) OR if insert is into FD1 table*/
     char token4_substr[7];
     strncpy(token4_substr, token4_lower, 6);
+	token4_substr[6] = '\0';
     if(strcmp(token4_substr, "values") != 0 || strcmp(token3, "fd1") == 0){
     	return NULL;
     }
