@@ -1,0 +1,13 @@
+create fd <fd_name> on <table_name> (a,b,c) : (d,e,f)
+
+insert into <fd_table> values('<name>','<table_name>','{"a","b","c"}',);
+
+
+if cmd:   insert into fd_table values(....);
+    execute without checking
+elsif cmd:  insert into <any_table> values(...);
+    check if functional dependency holds.
+        
+    execute.
+elsif cmd:  create fd <fd_name> on <tab_name> a,b,c : d,e,f
+    here we parse this, and insert into fd_table
