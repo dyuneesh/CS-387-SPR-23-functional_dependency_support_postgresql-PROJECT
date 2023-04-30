@@ -4208,7 +4208,7 @@ int check_creat_fd(char* qs) {
 	tok_creat = lower_case_str(tok_creat);
 	tok_fd = lower_case_str(tok_fd);
 
-	if( strcmp(tok_creat, "create") != 0 || strcmp(tok_fd, "fd1") || strcmp(tok_fd, "fd2")) {
+	if( strcmp(tok_creat, "create") != 0 || !(strcmp(tok_fd, "fd1") || strcmp(tok_fd, "fd2")) ) {
 		free(tok_creat); free(tok_fd); free(copy_qs);
 		return false;
 	}
@@ -4224,7 +4224,7 @@ int check_creat_fd(char* qs) {
 	
 }
 
-bool check_del_fd(char* qs) {
+int check_del_fd(char* qs) {
 	//delete fd <fd_name> on <tab_name>
 	char* copy_qs = (char*)malloc(strlen(qs)+1);
 	strcpy(copy_qs, qs);
@@ -4235,7 +4235,7 @@ bool check_del_fd(char* qs) {
 	tok_del = lower_case_str(tok_del);
 	tok_fd = lower_case_str(tok_fd);
 
-	if( strcmp(tok_del, "delete") != 0 || strcmp(tok_fd, "fd1") || strcmp(tok_fd, "fd2")) {
+	if( strcmp(tok_del, "delete") != 0 || !(strcmp(tok_fd, "fd1") || strcmp(tok_fd, "fd2")) ) {
 		free(tok_del); free(tok_fd); free(copy_qs);
 		return false;
 	}
@@ -4257,7 +4257,7 @@ char* my_fd_mod(char* query_string, char* table_name) {
 	char* copy_qs = (char*)malloc(strlen(query_string)+1);
 	strcpy(copy_qs, query_string);
 
-	char *FD_TABLE_NAME = lower_case_str(FD_TABLE_NAME);
+	char *FD_TABLE_NAME = lower_case_str(table_name);
 
 
 	//create fd <fd_name> on <tab_name> a,b,c : d,e,f
@@ -4268,7 +4268,7 @@ char* my_fd_mod(char* query_string, char* table_name) {
 		char* tok_on = strtok(NULL, " "); 		if(tok_on == NULL) {return copy_qs;}
 		char* tok_tabname = strtok(NULL, " ");	if(tok_tabname == NULL) {return copy_qs;}
 		char* tok_lhs = strtok(NULL, ":");		if(tok_lhs == NULL) {return copy_qs;}
-		char* tok_rhs = strtok(NULL, ";");		if(tok_rhs == NULL) {return copy_qs;}
+		char* tok_rhs = strtok(NULL, ";\n\0");		if(tok_rhs == NULL) {return copy_qs;}
 
 		tok_on = lower_case_str(tok_on);		if( strcmp(tok_on, "on") != 0 ) {
 			free(tok_on);
@@ -4294,11 +4294,13 @@ char* my_fd_mod(char* query_string, char* table_name) {
 		for(int i=0; i<num_lhs; i++) {
 			if(i != 0) strcat(my_query, ",");
 			strcat(my_query, "\""); strcat(my_query, FD_LHS[i]); strcat(my_query, "\"");
+			free(FD_LHS[i]);
 		}
 		strcat(my_query, "}','{");
 		for(int i=0; i<num_rhs; i++) {
 			if(i != 0) strcat(my_query, ",");
 			strcat(my_query, "\"");	strcat(my_query, FD_RHS[i]); strcat(my_query, "\"");
+			free(FD_RHS[i]);
 		}
 		strcat(my_query, "}');");
 		free(copy_qs); 
@@ -4311,7 +4313,7 @@ char* my_fd_mod(char* query_string, char* table_name) {
 		char* tok_fd = strtok(NULL, " ");
 		char* tok_fdname = strtok(NULL, " ");   if(tok_fdname == NULL) {return copy_qs;}
 		char* tok_from = strtok(NULL, " "); 		if(tok_from == NULL) {return copy_qs;}
-		char* tok_tabname = strtok(NULL, " ;");	if(tok_tabname == NULL) {return copy_qs;}
+		char* tok_tabname = strtok(NULL, " ;\n\0");	if(tok_tabname == NULL) {return copy_qs;}
 
 		tok_from = lower_case_str(tok_from);		if( strcmp(tok_from, "from") != 0 ) {
 			free(tok_from);
@@ -4725,12 +4727,31 @@ void exec_multiple(const char * query_string){
 
         if(values == NULL){
 			int cr_fd = check_creat_fd(token);
-			//pseudo code....
+			int dr_fd = check_del_fd(token);
 
-			/**
-			 * based in fd num (1/2) run an appropriate query, by passing FD1/FD2 arg to my_fd_mod.
-			 */
+			int sum = cr_fd + dr_fd; 		//if one is non zero, other will be zero!
+			
+			char* temp = (char*)malloc(strlen(token)+5);
+			strcpy(temp,token);
+			strcat(temp,";");
 
+			char* FD1 = (char*)malloc(4);
+			strcpy(FD1,"fd1");
+			char* FD2 = (char*)malloc(4);
+			strcpy(FD2,"fd2");
+			
+			if(sum == 1){
+				free(token);
+				token = my_fd_mod(temp,FD1);
+			}
+			else if(sum == 2){
+				free(token);
+				token = my_fd_mod(temp,FD2);
+			}
+			else{
+				// - -- -- - -- - -- - - -
+			}
+			free(temp);
 
         }
         else if(mode == 1){
