@@ -99,15 +99,15 @@ bool check_del_fd(char* qs) {
 	return true;
 }
 
-
-
-char* my_fd_mod(char* query_string) {
+char* my_fd_mod(char* query_string, char* table_name) {
 	if(strlen(query_string) == 0) return query_string;
 
 	char* copy_qs = (char*)malloc(strlen(query_string)+1);
 	strcpy(copy_qs, query_string);
 
-	char *FD_TABLE_NAME = "FD1";
+	char *FD_TABLE_NAME = lower_case_str(FD_TABLE_NAME);
+
+
 	//create fd <fd_name> on <tab_name> a,b,c : d,e,f
 	if(check_creat_fd(copy_qs)) {
 		char* tok_creat = strtok(copy_qs, " "); 
