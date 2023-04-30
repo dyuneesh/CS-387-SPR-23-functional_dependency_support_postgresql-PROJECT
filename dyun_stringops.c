@@ -159,7 +159,7 @@ char* my_fd_mod(char* query_string) {
 		char* tok_fd = strtok(NULL, " ");
 		char* tok_fdname = strtok(NULL, " ");   if(tok_fdname == NULL) {return copy_qs;}
 		char* tok_from = strtok(NULL, " "); 		if(tok_from == NULL) {return copy_qs;}
-		char* tok_tabname = strtok(NULL, ";");	if(tok_tabname == NULL) {return copy_qs;}
+		char* tok_tabname = strtok(NULL, " ;");	if(tok_tabname == NULL) {return copy_qs;}
 
 		tok_from = lower_case_str(tok_from);		if( strcmp(tok_from, "from") != 0 ) {
 			free(tok_from);
@@ -169,10 +169,15 @@ char* my_fd_mod(char* query_string) {
 		tok_tabname = lower_case_str(tok_tabname);
 		//need to free tok_ fdname,tabname,from,
 		char* my_query = (char*)malloc(
-			50+strlen(FD_TABLE_NAME)+strlen(tok_fdname)+strlen(tok_tabname)+(size_lhs+size_rhs)+3*(num_lhs+num_rhs)
+			60+strlen(FD_TABLE_NAME)+strlen(tok_fdname)+strlen(tok_tabname)
 		);
 		strcpy(my_query, "delete from "); strcat(my_query, FD_TABLE_NAME);	
-		strcat(my_query, " where ");	
+		strcat(my_query, " where table_name = '"); strcat(my_query, tok_tabname);
+		strcat(my_query, "' and fd_name = '"); strcat(my_query, tok_fdname); strcat(my_query, "';");
+
+		free(copy_qs);
+		free(tok_fdname); free(tok_from); free(tok_tabname); 
+		return my_query;
 
 	}
 	else { // insert into : code
