@@ -2459,7 +2459,8 @@ array_set_element(Datum arraydatum,
 	{
 		bits8	   *newnullbitmap = ARR_NULLBITMAP(newarray);
 
-		/* palloc0 above already marked any inserted positions as nulls */
+		/* Zero the bitmap to take care of marking inserted positions null */
+		MemSet(newnullbitmap, 0, (newnitems + 7) / 8);
 		/* Fix the inserted value */
 		if (addedafter)
 			array_set_isnull(newnullbitmap, newnitems - 1, isNull);
@@ -3075,7 +3076,8 @@ array_set_slice(Datum arraydatum,
 			bits8	   *newnullbitmap = ARR_NULLBITMAP(newarray);
 			bits8	   *oldnullbitmap = ARR_NULLBITMAP(array);
 
-			/* palloc0 above already marked any inserted positions as nulls */
+			/* Zero the bitmap to handle marking inserted positions null */
+			MemSet(newnullbitmap, 0, (nitems + 7) / 8);
 			array_bitmap_copy(newnullbitmap, addedbefore,
 							  oldnullbitmap, 0,
 							  itemsbefore);

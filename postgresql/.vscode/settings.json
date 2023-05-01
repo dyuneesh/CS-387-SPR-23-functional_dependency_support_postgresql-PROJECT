@@ -1,0 +1,9 @@
+{
+  "cmake.configureOnOpen": true,
+  "files.associations": {
+    "*.ejs": "html",
+    "lsyscache.h": "c",
+    "postgres.h": "c",
+    "analyze.h": "c"
+  }
+}

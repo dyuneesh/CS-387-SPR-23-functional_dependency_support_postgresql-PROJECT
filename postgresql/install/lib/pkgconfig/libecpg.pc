@@ -4,6 +4,6 @@ Url: https://www.postgresql.org/
 Version: 14.7
 Requires: 
 Requires.private: libpq libpgtypes
-Cflags: -I/home/dyuneesh/Desktop/6th_sem/dibs_317_387/project/CS-387-SPR-23-functional_dependency_support_postgresql-PROJECT/postgresql//install/include
-Libs: -L/home/dyuneesh/Desktop/6th_sem/dibs_317_387/project/CS-387-SPR-23-functional_dependency_support_postgresql-PROJECT/postgresql//install/lib -lecpg
+Cflags: -I/home/karthikeya/Desktop/6th_sem/dbms/lab6/postgresql/install/include
+Libs: -L/home/karthikeya/Desktop/6th_sem/dbms/lab6/postgresql/install/lib -lecpg
 Libs.private:  -lpgcommon -lpgport -lm

@@ -61,8 +61,8 @@ endif
 endif
 else # not PGXS
 vpath_build = no
-abs_top_builddir = /home/dyuneesh/Desktop/6th_sem/dibs_317_387/project/CS-387-SPR-23-functional_dependency_support_postgresql-PROJECT/postgresql
-abs_top_srcdir = /home/dyuneesh/Desktop/6th_sem/dibs_317_387/project/CS-387-SPR-23-functional_dependency_support_postgresql-PROJECT/postgresql
+abs_top_builddir = /home/karthikeya/Desktop/6th_sem/dbms/lab6/postgresql
+abs_top_srcdir = /home/karthikeya/Desktop/6th_sem/dbms/lab6/postgresql
 
 ifneq ($(vpath_build),yes)
 top_srcdir = $(top_builddir)
@@ -94,7 +94,7 @@ ifndef PGXS
 # Note that prefix, exec_prefix, and datarootdir aren't defined in a PGXS build;
 # makefiles may only use the derived variables such as bindir.
 
-prefix := /home/dyuneesh/Desktop/6th_sem/dibs_317_387/project/CS-387-SPR-23-functional_dependency_support_postgresql-PROJECT/postgresql//install
+prefix := /home/karthikeya/Desktop/6th_sem/dbms/lab6/postgresql/install
 exec_prefix := ${prefix}
 datarootdir := ${prefix}/share
 
@@ -285,7 +285,7 @@ ZIC =
 AR = ar
 DLLTOOL = 
 DLLWRAP = 
-LIBS = -lz -lreadline -lm 
+LIBS = -lz -lreadline -lpthread -lrt -ldl -lm 
 LDAP_LIBS_FE = 
 LDAP_LIBS_BE = 
 UUID_LIBS = 
@@ -509,7 +509,7 @@ STRIP_SHARED_LIB = strip --strip-unneeded
 
 DBTOEPUB	= 
 FOP				= 
-XMLLINT			= /usr/bin/xmllint
+XMLLINT			= 
 XSLTPROC		= 
 
 # Code coverage

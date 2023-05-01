@@ -4862,10 +4862,18 @@ retry:
 
 	/*
 	 * Queue a waiter to signal when this child dies. The wait will be handled
-	 * automatically by an operating system thread pool.  The memory will be
-	 * freed by a later call to waitpid().
+	 * automatically by an operating system thread pool.
+	 *
+	 * Note: use malloc instead of palloc, since it needs to be thread-safe.
+	 * Struct will be free():d from the callback function that runs on a
+	 * different thread.
 	 */
-	childinfo = palloc(sizeof(win32_deadchild_waitinfo));
+	childinfo = malloc(sizeof(win32_deadchild_waitinfo));
+	if (!childinfo)
+		ereport(FATAL,
+				(errcode(ERRCODE_OUT_OF_MEMORY),
+				 errmsg("out of memory")));
+
 	childinfo->procHandle = pi.hProcess;
 	childinfo->procId = pi.dwProcessId;
 
@@ -4879,7 +4887,7 @@ retry:
 				(errmsg_internal("could not register process for wait: error code %lu",
 								 GetLastError())));
 
-	/* Don't close pi.hProcess here - waitpid() needs access to it */
+	/* Don't close pi.hProcess here - the wait thread needs access to it */
 
 	CloseHandle(pi.hThread);
 
@@ -6523,21 +6531,36 @@ ShmemBackendArrayRemove(Backend *bn)
 static pid_t
 waitpid(pid_t pid, int *exitstatus, int options)
 {
-	win32_deadchild_waitinfo *childinfo;
-	DWORD		exitcode;
 	DWORD		dwd;
 	ULONG_PTR	key;
 	OVERLAPPED *ovl;
 
-	/* Try to consume one win32_deadchild_waitinfo from the queue. */
-	if (!GetQueuedCompletionStatus(win32ChildQueue, &dwd, &key, &ovl, 0))
+	/*
+	 * Check if there are any dead children. If there are, return the pid of
+	 * the first one that died.
+	 */
+	if (GetQueuedCompletionStatus(win32ChildQueue, &dwd, &key, &ovl, 0))
 	{
-		errno = EAGAIN;
-		return -1;
+		*exitstatus = (int) key;
+		return dwd;
 	}
 
-	childinfo = (win32_deadchild_waitinfo *) key;
-	pid = childinfo->procId;
+	return -1;
+}
+
+/*
+ * Note! Code below executes on a thread pool! All operations must
+ * be thread safe! Note that elog() and friends must *not* be used.
+ */
+static void WINAPI
+pgwin32_deadchild_callback(PVOID lpParameter, BOOLEAN TimerOrWaitFired)
+{
+	win32_deadchild_waitinfo *childinfo = (win32_deadchild_waitinfo *) lpParameter;
+	DWORD		exitcode;
+
+	if (TimerOrWaitFired)
+		return;					/* timeout. Should never happen, since we use
+								 * INFINITE as timeout value. */
 
 	/*
 	 * Remove handle from wait - required even though it's set to wait only
@@ -6553,11 +6576,13 @@ waitpid(pid_t pid, int *exitstatus, int options)
 		write_stderr("could not read exit code for process\n");
 		exitcode = 255;
 	}
-	*exitstatus = exitcode;
+
+	if (!PostQueuedCompletionStatus(win32ChildQueue, childinfo->procId, (ULONG_PTR) exitcode, NULL))
+		write_stderr("could not post child completion status\n");
 
 	/*
-	 * Close the process handle.  Only after this point can the PID can be
-	 * recycled by the kernel.
+	 * Handle is per-process, so we close it here instead of in the
+	 * originating thread
 	 */
 	CloseHandle(childinfo->procHandle);
 
@@ -6565,36 +6590,9 @@ waitpid(pid_t pid, int *exitstatus, int options)
 	 * Free struct that was allocated before the call to
 	 * RegisterWaitForSingleObject()
 	 */
-	pfree(childinfo);
+	free(childinfo);
 
-	return pid;
-}
-
-/*
- * Note! Code below executes on a thread pool! All operations must
- * be thread safe! Note that elog() and friends must *not* be used.
- */
-static void WINAPI
-pgwin32_deadchild_callback(PVOID lpParameter, BOOLEAN TimerOrWaitFired)
-{
-	/* Should never happen, since we use INFINITE as timeout value. */
-	if (TimerOrWaitFired)
-		return;
-
-	/*
-	 * Post the win32_deadchild_waitinfo object for waitpid() to deal with. If
-	 * that fails, we leak the object, but we also leak a whole process and
-	 * get into an unrecoverable state, so there's not much point in worrying
-	 * about that.  We'd like to panic, but we can't use that infrastructure
-	 * from this thread.
-	 */
-	if (!PostQueuedCompletionStatus(win32ChildQueue,
-									0,
-									(ULONG_PTR) lpParameter,
-									NULL))
-		write_stderr("could not post child completion status\n");
-
-	/* Queue SIGCHLD signal. */
+	/* Queue SIGCHLD signal */
 	pg_queue_signal(SIGCHLD);
 }
 #endif							/* WIN32 */

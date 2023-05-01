@@ -45,7 +45,6 @@
 #include "postmaster/bgworker_internals.h"
 #include "storage/bufmgr.h"
 #include "storage/lmgr.h"
-#include "storage/pmsignal.h"
 #include "storage/proc.h"
 #include "storage/procarray.h"
 #include "utils/acl.h"
@@ -2172,18 +2171,11 @@ vacuum_delay_point(void)
 		if (msec > VacuumCostDelay * 4)
 			msec = VacuumCostDelay * 4;
 
-		pgstat_report_wait_start(WAIT_EVENT_VACUUM_DELAY);
-		pg_usleep(msec * 1000);
-		pgstat_report_wait_end();
-
-		/*
-		 * We don't want to ignore postmaster death during very long vacuums
-		 * with vacuum_cost_delay configured.  We can't use the usual
-		 * WaitLatch() approach here because we want microsecond-based sleep
-		 * durations above.
-		 */
-		if (IsUnderPostmaster && !PostmasterIsAlive())
-			exit(1);
+		(void) WaitLatch(MyLatch,
+						 WL_LATCH_SET | WL_TIMEOUT | WL_EXIT_ON_PM_DEATH,
+						 msec,
+						 WAIT_EVENT_VACUUM_DELAY);
+		ResetLatch(MyLatch);
 
 		VacuumCostBalance = 0;
 

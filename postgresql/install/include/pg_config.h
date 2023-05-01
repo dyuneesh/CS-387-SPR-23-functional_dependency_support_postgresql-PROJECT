@@ -44,7 +44,7 @@
 #define BLCKSZ 8192
 
 /* Saved arguments from configure */
-#define CONFIGURE_ARGS " '--prefix=/home/dyuneesh/Desktop/6th_sem/dibs_317_387/project/CS-387-SPR-23-functional_dependency_support_postgresql-PROJECT/postgresql//install/' '--enable-debug'"
+#define CONFIGURE_ARGS " '--prefix=/home/karthikeya/Desktop/6th_sem/dbms/lab6/postgresql/install' '--enable-debug'"
 
 /* Define to the default TCP port number on which the server listens and to
    which clients will try to connect. This can be overridden at run-time, but
@@ -851,7 +851,7 @@
 #define PG_VERSION_NUM 140007
 
 /* A string containing the version number, platform, and C compiler */
-#define PG_VERSION_STR "PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, 64-bit"
+#define PG_VERSION_STR "PostgreSQL 14.7 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0, 64-bit"
 
 /* Define to 1 to allow profiling output to be saved separately for each
    process. */

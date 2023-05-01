@@ -2,9 +2,6 @@
 
 REGRESS = rolenames alter_system_table
 
-# the whole point of these tests is to not run installcheck
-NO_INSTALLCHECK = 1
-
 ifdef USE_PGXS
 PG_CONFIG = pg_config
 PGXS := $(shell $(PG_CONFIG) --pgxs)

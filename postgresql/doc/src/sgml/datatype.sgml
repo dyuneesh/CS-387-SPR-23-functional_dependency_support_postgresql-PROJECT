@@ -1438,12 +1438,7 @@ SELECT b, char_length(b) FROM test2;
    <para>
     Example:
 <programlisting>
-SET bytea_output = 'hex';
-
-SELECT '\xDEADBEEF'::bytea;
-   bytea
-------------
- \xdeadbeef
+SELECT '\xDEADBEEF';
 </programlisting>
    </para>
   </sect2>

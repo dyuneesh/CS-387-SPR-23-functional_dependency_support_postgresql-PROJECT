@@ -1,0 +1,2 @@
+On insert/update, ExecInsert() in nodeModifyTable.c is called 
+    ExecWithCheckOptions() is called in ExecInsert() to check for all check constraints

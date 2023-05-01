@@ -728,7 +728,8 @@ check_agg_arguments_walker(Node *node,
 				context->min_agglevel > agglevelsup)
 				context->min_agglevel = agglevelsup;
 		}
-		/* Continue and descend into subtree */
+		/* no need to examine args of the inner aggregate */
+		return false;
 	}
 	if (IsA(node, GroupingFunc))
 	{
